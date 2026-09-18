@@ -5,18 +5,71 @@ function letterText(r,scope='all'){if(scope==='basis')return r.basis||'';if(scop
 function hi(s,ts){let x=esc(s);for(const t of ts){let p=esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(p)x=x.replace(new RegExp(p,'gi'),m=>`<mark>${m}</mark>`)}return x}
 function key(law,no){return `${law}|${String(no).replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'')}`}
 function findArticle(law,no){let l=lawMap.get(law);if(!l)return null;let n=String(no).replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'');return l.articles.find(a=>a.no.replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'')===n)}
-let _lawAliasPattern='';
+let _lawAliasPattern='',CONTEXT_ALIASES=[];
 function buildLawAliasPattern(){
   const aliases=[];
   for(const l of LAWS){if(l?.name)aliases.push(l.name)}
   aliases.push('採購法施行細則','採購法');
   const uniq=[...new Set(aliases)].sort((a,b)=>b.length-a.length);
   _lawAliasPattern=uniq.map(reEsc).join('|');
+
+  // 建立「上下文簡稱 → 正式法規名稱」字典。
+  // 例如：共同供應契約 → 共同供應契約實施辦法。
+  // 只有可唯一對應且長度足夠的簡稱才採用，寧可不連，也不要誤連。
+  const candidates=new Map();
+  const suffixes=['實施辦法','作業辦法','管理辦法','評選辦法','監辦辦法','收費辦法','辦法','審議規則','調解規則','規則','組織準則','準則','認定標準','標準','執行注意事項','注意事項','作業要點','要點','執行程序','作業規定','規定','一覽表'];
+  for(const l of LAWS){
+    const name=l?.name||'';
+    if(!name)continue;
+    const arr=[name];
+    for(const suf of suffixes){
+      if(name.endsWith(suf)){
+        const a=name.slice(0,-suf.length).trim();
+        if(a.length>=4)arr.push(a);
+      }
+    }
+    for(const a of arr){
+      if(!candidates.has(a))candidates.set(a,new Set());
+      candidates.get(a).add(name);
+    }
+  }
+  CONTEXT_ALIASES=[...candidates.entries()]
+    .filter(([a,names])=>a.length>=4&&names.size===1)
+    .map(([alias,names])=>({alias,law:[...names][0]}))
+    .sort((a,b)=>b.alias.length-a.alias.length);
 }
 function canonicalLawName(alias){
   if(alias==='採購法')return '政府採購法';
   if(alias==='採購法施行細則')return '政府採購法施行細則';
   return alias;
+}
+function resolveContextLaw(text,pos,pronoun,out){
+  // 1. 最近已成功辨識的明示法規，距離太遠則不沿用。
+  const prev=out.filter(x=>x.start<pos&&x.explicit).sort((a,b)=>b.start-a.start)[0];
+  if(prev && pos-prev.end<=180){
+    const n=prev.law;
+    if(pronoun==='本辦法'||pronoun==='同辦法'||pronoun==='該辦法'||pronoun==='前開辦法'){
+      if(/辦法$/.test(n))return n;
+    }else if(pronoun==='本法'||pronoun==='同法'||pronoun==='該法'){
+      if(/法$|條例$/.test(n))return n;
+    }else return n;
+  }
+  // 2. 往前最多約300字找正式法規名稱或可唯一對應的簡稱。
+  const start=Math.max(0,pos-320),ctx=text.slice(start,pos);
+  let best=null;
+  for(const l of LAWS){
+    const name=l?.name||''; if(!name)continue;
+    const i=ctx.lastIndexOf(name);
+    if(i>=0 && (!best||i>best.i))best={i,law:name};
+  }
+  for(const x of CONTEXT_ALIASES){
+    const i=ctx.lastIndexOf(x.alias);
+    if(i>=0 && (!best||i>best.i))best={i,law:x.law};
+  }
+  if(!best)return null;
+  if(pronoun==='本辦法'||pronoun==='同辦法'||pronoun==='該辦法'||pronoun==='前開辦法')return /辦法$/.test(best.law)?best.law:null;
+  if(pronoun==='本法'||pronoun==='同法'||pronoun==='該法')return /法$|條例$/.test(best.law)?best.law:null;
+  return best.law;
 }
 function refs(text){
   text=String(text||'');
@@ -42,15 +95,40 @@ function refs(text){
     const a=m[2]+((m[3]||m[4])?'-'+(m[3]||m[4]):'');
     add(m[1],a,m.index,explicit.lastIndex,true);
   }
-  // 「同法／同辦法／本法／本辦法」或同一串列後續「第57條」繼承最近法規。
-  const chained=/(同法|同辦法|本法|本辦法)?[\s　、，,；;及與和或]*第\s*(\d{1,3})(?:\s*條\s*之\s*(\d+)|\s*條|\s*之\s*(\d+)\s*條?)/g;
-  while((m=chained.exec(text))){
+  // 母法 →「其施行細則／施行細則」切換。
+  // 例：採購法第46條及其施行細則第50條 → 第46條屬政府採購法，第50條屬政府採購法施行細則。
+  // 必須放在一般 chained 規則之前，避免第50條錯誤繼承前一個母法。
+  const enforcement=/(?:及|暨|與|和|、)?\s*(?:其|本法之|該法之|本法|該法)?\s*施[行行]細則\s*第\s*(\d{1,3})(?:\s*條\s*之\s*(\d+)|\s*條|\s*之\s*(\d+)\s*條?)/g;
+  while((m=enforcement.exec(text))){
     if(covered.some(([a,b])=>m.index>=a&&m.index<b))continue;
     const prev=out.filter(x=>x.start<m.index).sort((a,b)=>b.start-a.start)[0];
-    if(!prev)continue;
-    if(!m[1] && m.index-prev.end>80)continue;
+    if(!prev || m.index-prev.end>100)continue;
+    let rules=null;
+    // 優先找「母法正式名稱＋施行細則」。採購法簡稱已先正規化成政府採購法。
+    const candidates=[prev.law+'施行細則'];
+    // 若前一個本來就是施行細則，則沿用該施行細則。
+    if(/施[行行]細則$/.test(prev.law))candidates.unshift(prev.law);
+    for(const c of candidates){if(lawMap.has(c)){rules=c;break}}
+    if(!rules)continue; // 找不到明確對應施行細則時，寧可不連。
+    const a=m[1]+((m[2]||m[3])?'-'+(m[2]||m[3]):'');
+    add(rules,a,m.index,enforcement.lastIndex,true);
+  }
+  // 「本法／本辦法／同法／同辦法」採上下文追溯；不再一律沿用前一個條文。
+  // 無代名詞的連續「第57條」仍可在短距離內繼承最近法規。
+  const chained=/(同法|同辦法|本法|本辦法|該法|該辦法|前開辦法)?[\s　、，,；;及與和或]*第\s*(\d{1,3})(?:\s*條\s*之\s*(\d+)|\s*條|\s*之\s*(\d+)\s*條?)/g;
+  while((m=chained.exec(text))){
+    if(covered.some(([a,b])=>m.index>=a&&m.index<b))continue;
+    const pronoun=m[1]||'';
+    let law=null;
+    if(pronoun){
+      law=resolveContextLaw(text,m.index,pronoun,out);
+    }else{
+      const prev=out.filter(x=>x.start<m.index).sort((a,b)=>b.start-a.start)[0];
+      if(prev && m.index-prev.end<=80)law=prev.law;
+    }
+    if(!law)continue;
     const a=m[2]+((m[3]||m[4])?'-'+(m[3]||m[4]):'');
-    if(findArticle(prev.law,a)) out.push({law:prev.law,a,start:m.index,end:chained.lastIndex,explicit:false});
+    if(findArticle(law,a)) out.push({law,a,start:m.index,end:chained.lastIndex,explicit:false});
   }
   out.sort((a,b)=>a.start-b.start || (b.end-b.start)-(a.end-a.start));
   const clean=[];
