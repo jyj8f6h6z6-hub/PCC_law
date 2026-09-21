@@ -13,3 +13,5 @@
 }
 .drawer{border-left:1px solid #d6e1e3}
 @media(max-width:1000px){.drawer{width:min(620px,92vw)}}
+
+.lawhit-point b{display:block}.hit-snippet{display:block;margin-top:7px;line-height:1.65;color:#42575d}.search-target{background:#fff8cf;outline:3px solid #f1d36a;outline-offset:4px;border-radius:4px}.fulltext-para{padding:8px 0;line-height:1.8}.fulltext-para+ .fulltext-para{border-top:1px dashed #e5ebec}

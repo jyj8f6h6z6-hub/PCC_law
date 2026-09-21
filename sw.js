@@ -1,4 +1,4 @@
-const CACHE = 'pcc-e-law-v6.8-20260921';
+const CACHE = 'pcc-e-law-v6.9-20260921';
 const CORE = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './offline.html',
   './data/laws.json', './data/letters.json'
