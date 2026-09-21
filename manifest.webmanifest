@@ -1,0 +1,14 @@
+{
+  "name": "工程會電子法規彙編",
+  "short_name": "工程會法規",
+  "description": "政府採購法、施行細則、工程會主管法規及PRMS函釋離線查詢",
+  "lang": "zh-Hant",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f4f7a",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
