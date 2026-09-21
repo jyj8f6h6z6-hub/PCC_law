@@ -1,5 +1,32 @@
 let LETTERS=[],LAWS=[],lawMap=new Map(),shown=0,lshown=0,searchLetterRows=[],letterRows=[],LETTER_REF_CACHE=new Map(),REF_INDEX=new Map(),EXACT_INDEX=new Map(),REF_INDEX_READY=false;const PAGE=40,$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s||'').toLowerCase().replace(/[\s　]+/g,' ').trim(); const tokens=s=>norm(s).split(' ').filter(Boolean); const reEsc=s=>String(s??'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+// 清除工程會舊版網頁因固定欄寬產生的「排版換行」。
+// 原則：同一段落中若前行尚未結束，且下一行不是新的項／款／目／編號，就接回同一行；
+// 真正的段落、項款目與清單換行仍保留。只處理網站顯示資料，不修改原始 JSON。
+function smartLawWrap(text){
+  const raw=String(text??'').replace(/\r\n?/g,'\n');
+  if(!raw.includes('\n'))return raw;
+  const lines=raw.split('\n');
+  const out=[];
+  const startsStructure=s=>/^(?:第[一二三四五六七八九十百千0-9]+(?:項|款|目)|[一二三四五六七八九十百千]+[、．.]|[（(][一二三四五六七八九十百千0-9]+[）)]|\d+[、．.]|[甲乙丙丁戊己庚辛壬癸][、．.]|附表|附錄|附件)/.test(s);
+  const endsParagraph=s=>/[。！？；]$/.test(s);
+  for(let i=0;i<lines.length;i++){
+    const cur=lines[i].trim();
+    if(!cur){if(out.length&&out[out.length-1]!=='')out.push('');continue}
+    if(!out.length||out[out.length-1]===''){out.push(cur);continue}
+    const prev=out[out.length-1];
+    // 前句已完整結束，或下一行明顯是新項／款／目／編號：保留真正換行。
+    if(endsParagraph(prev)||startsStructure(cur)) out.push(cur);
+    else out[out.length-1]=prev+cur;
+  }
+  return out.join('\n').replace(/\n{3,}/g,'\n\n');
+}
+function normalizeLawDisplayData(laws){
+  for(const l of laws){
+    if(typeof l.fullText==='string')l.fullText=smartLawWrap(l.fullText);
+    if(Array.isArray(l.articles))for(const a of l.articles)if(typeof a.text==='string')a.text=smartLawWrap(a.text);
+  }
+}
 function lawText(l){return [l.name,l.category,l.published,l.updated,l.fullText,...l.articles.flatMap(a=>[a.no,a.text])].join('\n')}
 function letterText(r,scope='all'){if(scope==='basis')return r.basis||'';if(scope==='subject')return r.subject||'';if(scope==='body')return r.body||'';return [r.basis,r.subject,r.body,r.docNo,r.issuer,r.pkPrmsRuleContent].join(' ')}
 function hi(s,ts){let x=esc(s);for(const t of ts){let p=esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(p)x=x.replace(new RegExp(p,'gi'),m=>`<mark>${m}</mark>`)}return x}
@@ -164,5 +191,5 @@ function openDrawer(law,a){let ar=findArticle(law,a);$('#drawerTitle').textConte
 function runLetterSearch(){let ts=tokens($('#lq').value),scope=$('#lscope').value;letterRows=LETTERS.filter(r=>ts.every(t=>norm(letterText(r,scope)).includes(t))).sort((a,b)=>$('#lsort').value==='new'?b.index-a.index:a.index-b.index);lshown=0;$('#lresults').innerHTML='';renderLetterMore()}
 function renderLetterMore(){let part=letterRows.slice(lshown,lshown+PAGE);lshown+=part.length;$('#lstatus').className='status';$('#lstatus').textContent=`找到 ${letterRows.length.toLocaleString()} 筆函釋${letterRows.length>PAGE?`（目前顯示 ${lshown.toLocaleString()} 筆）`:''}`;if(!letterRows.length)$('#lresults').innerHTML='<div class="empty">沒有符合條件的函釋</div>';else $('#lresults').insertAdjacentHTML('beforeend',part.map(r=>renderLetter(r,tokens($('#lq').value),$('#lfull').checked)).join(''));$('#lmore').hidden=lshown>=letterRows.length}
 function gotoLetter(id){showView('letters');let r=LETTERS.find(x=>x.index==id);if(!r)return;$('#lq').value=r.docNo||String(id);runLetterSearch();setTimeout(()=>$('#lresults .letter')?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
-Promise.all([fetch('./data/laws.json').then(r=>r.json()),fetch('./data/letters.json').then(r=>r.json())]).then(([l,d])=>{LAWS=l.records;LETTERS=d.records;LAWS.forEach(x=>lawMap.set(x.name,x));buildLawAliasPattern();let cats=[...new Set(LAWS.map(x=>x.category))];$('#category').innerHTML='<option value="">全部10類</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');runSearch();renderLaws();renderArticleList();runLetterSearch();buildRefIndexAsync()}).catch(e=>{$('#searchStatus').textContent='資料載入失敗。請使用 VS Code Live Server 或 GitHub Pages 開啟。';console.error(e)});
+Promise.all([fetch('./data/laws.json').then(r=>r.json()),fetch('./data/letters.json').then(r=>r.json())]).then(([l,d])=>{LAWS=l.records;LETTERS=d.records;normalizeLawDisplayData(LAWS);LAWS.forEach(x=>lawMap.set(x.name,x));buildLawAliasPattern();let cats=[...new Set(LAWS.map(x=>x.category))];$('#category').innerHTML='<option value="">全部10類</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');runSearch();renderLaws();renderArticleList();runLetterSearch();buildRefIndexAsync()}).catch(e=>{$('#searchStatus').textContent='資料載入失敗。請使用 VS Code Live Server 或 GitHub Pages 開啟。';console.error(e)});
 let timer;document.addEventListener('click',e=>{let t=e.target.closest('.tab');if(t)showView(t.dataset.view);let ln=e.target.closest('[data-lawname]');if(ln){e.preventDefault();openLaw(ln.dataset.lawname)}let ar=e.target.closest('.article-row');if(ar)selectArticle(ar.dataset.a);let lr=e.target.closest('.lawref');if(lr){e.preventDefault();openDrawer(lr.dataset.law,lr.dataset.a)}let gl=e.target.closest('.gotoletter');if(gl){e.preventDefault();gotoLetter(+gl.dataset.id)}});$('#q').oninput=()=>{clearTimeout(timer);timer=setTimeout(runSearch,140)};$('#scope').onchange=runSearch;$('#full').onchange=runSearch;$('#clear').onclick=()=>{$('#q').value='';runSearch()};$('#more').onclick=renderSearchMore;$('#lawq').oninput=renderLaws;$('#category').onchange=renderLaws;$('#backLaws').onclick=()=>showView('laws');$('#articleLaw').onchange=()=>{renderArticleList();$('#articleDetail').innerHTML='<div class="empty">請選擇條文</div>'};$('#lq').oninput=()=>{clearTimeout(timer);timer=setTimeout(runLetterSearch,140)};$('#lscope').onchange=runLetterSearch;$('#lsort').onchange=runLetterSearch;$('#lfull').onchange=runLetterSearch;$('#lclear').onclick=()=>{$('#lq').value='';runLetterSearch()};$('#lmore').onclick=renderLetterMore;$('#drawerClose').onclick=()=>{$('#drawer').hidden=true;document.body.classList.remove('drawer-open')};
