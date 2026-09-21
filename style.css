@@ -15,3 +15,6 @@
 @media(max-width:1000px){.drawer{width:min(620px,92vw)}}
 
 .lawhit-point b{display:block}.hit-snippet{display:block;margin-top:7px;line-height:1.65;color:#42575d}.search-target{background:#fff8cf;outline:3px solid #f1d36a;outline-offset:4px;border-radius:4px}.fulltext-para{padding:8px 0;line-height:1.8}.fulltext-para+ .fulltext-para{border-top:1px dashed #e5ebec}
+
+/* v6.10: 全站搜尋－主管法規結果展開／收合 */
+.lawhits-group{margin:10px 0 16px}.lawhits-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid #cbdadd;border-radius:10px;background:#eef6f7;color:#29474e;font:inherit;cursor:pointer;text-align:left}.lawhits-toggle:hover{background:#e4f1f3}.lawhits-toggle b{color:#176b78}.lawhits-toggle-label{white-space:nowrap;font-weight:800;color:#176b78}.lawhits-body{padding-top:2px}.lawhits-body[hidden]{display:none!important}@media(max-width:600px){.lawhits-toggle{align-items:flex-start}.lawhits-toggle-label{font-size:14px}}
