@@ -186,7 +186,55 @@ function relatedRulesForAct(a){
   if(!ruleLaw)return [];
   return (ACT_RULES_MAP[k]||[]).map(no=>findArticle('政府採購法施行細則',no)).filter(Boolean);
 }
-function renderLetter(r,ts=[],full=true){return `<article class="letter" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4,'0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo,ts)}</span><span>${esc(r.issuer)}</span></div><div class="subject">${hi(r.subject||'(無主旨)',ts)}</div><div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis||'—',ts)}</div>${full?`<div class="body">${linkRefs(r.body||'',ts)}</div>`:''}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`}
+
+function letterLawGroups(r){
+  const groups=new Map();
+  for(const x of letterRefs(r)){
+    if(!lawMap.has(x.law))continue;
+    if(!groups.has(x.law))groups.set(x.law,[]);
+    const arr=groups.get(x.law);
+    if(!arr.includes(x.a))arr.push(x.a);
+  }
+  return [...groups.entries()].map(([law,articles])=>({law,articles}));
+}
+function renderLetterLawChooser(r){
+  const groups=letterLawGroups(r);
+  if(!groups.length)return '';
+  return `<div class="letter-law-tools" data-letter-law-tools="${r.index}">
+    <div class="letter-law-tools-title"><b>對照法規</b><span class="muted">勾選後顯示全文並定位本函釋提及條文（預設不顯示）</span></div>
+    <div class="letter-law-options">${groups.map((g,i)=>`<label class="letter-law-option"><input type="checkbox" class="letter-law-check" data-letter-id="${r.index}" data-letter-law-index="${i}"><span>${esc(g.law)} <small>${g.articles.map(a=>esc(displayArticleNo('第'+a.replace('-','-')+'條'))).join('、')}</small></span></label>`).join('')}</div>
+    <div class="letter-law-previews"></div>
+  </div>`;
+}
+function renderLetterLawPreview(r,lawName,articles,idx){
+  const l=lawMap.get(lawName);if(!l)return '';
+  let articleSet=new Set(articles);
+  let content='';
+  if(l.articles?.length){
+    content=l.articles.map(a=>{
+      const key=articleKey(a.no),hit=articleSet.has(key);
+      return `<section class="preview-law-article${hit?' search-target':''}" id="letter-${r.index}-law-${idx}-${encodeURIComponent(key)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text,[])}</div></section>`;
+    }).join('');
+  }else{
+    content=`<div class="preview-fulltext">${linkRefs(l.fullText||'（無全文內容）',[])}</div>`;
+  }
+  return `<section class="letter-law-preview-card" data-letter-law-preview="${idx}">
+    <div class="letter-law-preview-head"><div><h3>${esc(l.name)}</h3><div class="lawmeta">${esc(l.category||'')}</div></div><button type="button" class="letter-law-preview-close" data-letter-id="${r.index}" data-letter-law-index="${idx}" aria-label="關閉 ${esc(l.name)}">×</button></div>
+    <div class="letter-law-preview-scroll">${content}</div>
+    <div class="letter-law-preview-footer"><a href="#" class="open-full-law" data-full-lawname="${esc(l.name)}" data-full-target="article" data-full-targetkey="${esc(articles[0]||'')}" data-full-search="">開啟完整法規頁面 ↗</a></div>
+  </section>`;
+}
+function refreshLetterLawPreviews(letterId){
+  const r=LETTERS.find(x=>String(x.index)===String(letterId));if(!r)return;
+  const tools=document.querySelector(`[data-letter-law-tools="${CSS.escape(String(letterId))}"]`);if(!tools)return;
+  const groups=letterLawGroups(r),checks=[...tools.querySelectorAll('.letter-law-check:checked')];
+  const host=tools.querySelector('.letter-law-previews');
+  host.innerHTML=checks.map(c=>{const idx=+c.dataset.letterLawIndex,g=groups[idx];return g?renderLetterLawPreview(r,g.law,g.articles,idx):''}).join('');
+  requestAnimationFrame(()=>host.querySelectorAll('.letter-law-preview-card').forEach(card=>{
+    const target=card.querySelector('.search-target');if(target)card.querySelector('.letter-law-preview-scroll').scrollTop=Math.max(0,target.offsetTop-80);
+  }));
+}
+function renderLetter(r,ts=[],full=true){return `<article class="letter" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4,'0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo,ts)}</span><span>${esc(r.issuer)}</span></div><div class="subject">${hi(r.subject||'(無主旨)',ts)}</div><div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis||'—',ts)}</div>${full?`<div class="body">${linkRefs(r.body||'',ts)}</div>`:''}${renderLetterLawChooser(r)}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.hidden=true);document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('#'+v+'View').hidden=false;if(v==='laws')renderLaws();if(v==='articles')renderArticleList();if(v==='letters'&&!letterRows.length)runLetterSearch()}
 function snippet(text,ts,span=72){
   text=String(text||'').replace(/\s+/g,' ').trim();
@@ -221,6 +269,12 @@ function runSearch(){
   $('#letterHits').innerHTML='';$('#searchLawPreview').hidden=true;$('#searchLawPreview').innerHTML='<div class="empty">點選主管法規的命中位置，即可在此預覽。</div>';renderSearchMore();$('#searchStatus').className='status';$('#searchStatus').textContent=ts.length?`搜尋「${$('#q').value}」`:'請輸入關鍵字搜尋145筆主管法規與3,666筆函釋';
 }
 function renderSearchMore(){if(!tokens($('#q').value).length){$('#more').hidden=true;return}let part=searchLetterRows.slice(shown,shown+PAGE);shown+=part.length;if(part.length)$('#letterHits').insertAdjacentHTML('beforeend',(shown===part.length?`<div class="status">函釋找到 ${searchLetterRows.length.toLocaleString()} 筆</div>`:'')+part.map(r=>renderLetter(r,tokens($('#q').value),$('#full').checked)).join(''));$('#more').hidden=shown>=searchLetterRows.length}
+function closeSearchLawPreview(){
+  const p=$('#searchLawPreview');
+  if(!p)return;
+  p.hidden=true;
+  p.innerHTML='<div class="empty">點選主管法規的命中位置，即可在此預覽。</div>';
+}
 function openSearchLawPreview(name,target='',targetKey='',search=''){
   let l=lawMap.get(name);if(!l)return;let ts=tokens(search),content='';
   if(l.articles.length){
@@ -252,9 +306,19 @@ function selectArticle(a){let law=$('#articleLaw').value,ar=findArticle(law,a);i
 function openDrawer(law,a){let ar=findArticle(law,a);$('#drawerTitle').textContent=`${law} 第${a.replace('-','條之')}條`;$('#drawerBody').innerHTML=ar?`<div class="article-text">${linkRefs(ar.text)}</div><p><a href="${esc(lawMap.get(law)?.url||'#')}" target="_blank">工程會法規原始頁面 ↗</a></p><div class="status">本站偵測相關函釋：${lettersFor(law,a).length}筆</div>`:`<div class="empty">145筆主管法規資料中未找到此條文。</div>`;$('#drawer').hidden=false;document.body.classList.add('drawer-open')}
 function runLetterSearch(){let ts=tokens($('#lq').value),scope=$('#lscope').value;letterRows=LETTERS.filter(r=>ts.every(t=>norm(letterText(r,scope)).includes(t))).sort((a,b)=>$('#lsort').value==='new'?b.index-a.index:a.index-b.index);lshown=0;$('#lresults').innerHTML='';renderLetterMore()}
 function renderLetterMore(){let part=letterRows.slice(lshown,lshown+PAGE);lshown+=part.length;$('#lstatus').className='status';$('#lstatus').textContent=`找到 ${letterRows.length.toLocaleString()} 筆函釋${letterRows.length>PAGE?`（目前顯示 ${lshown.toLocaleString()} 筆）`:''}`;if(!letterRows.length)$('#lresults').innerHTML='<div class="empty">沒有符合條件的函釋</div>';else $('#lresults').insertAdjacentHTML('beforeend',part.map(r=>renderLetter(r,tokens($('#lq').value),$('#lfull').checked)).join(''));$('#lmore').hidden=lshown>=letterRows.length}
-function gotoLetter(id){showView('letters');let r=LETTERS.find(x=>x.index==id);if(!r)return;$('#lq').value=r.docNo||String(id);runLetterSearch();setTimeout(()=>$('#lresults .letter')?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
+function gotoLetter(id){closeSearchLawPreview();showView('letters');let r=LETTERS.find(x=>x.index==id);if(!r)return;$('#lq').value=r.docNo||String(id);runLetterSearch();setTimeout(()=>$('#lresults .letter')?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
 Promise.all([fetch('./data/laws.json').then(r=>r.json()),fetch('./data/letters.json').then(r=>r.json()),fetch('./data/act_rules_map.json').then(r=>r.json()),fetch('./json/政府採購法.json').then(r=>r.json()),fetch('./json/政府採購法施行細則.json').then(r=>r.json())]).then(([l,d,m,actLaw,ruleLaw])=>{LAWS=l.records;LETTERS=d.records;ACT_RULES_MAP=m.map||{};normalizeLawDisplayData(LAWS);LAWS.forEach(x=>lawMap.set(x.name,x));normalizeLawDisplayData([actLaw,ruleLaw]);lawMap.set('政府採購法',actLaw);lawMap.set('政府採購法施行細則',ruleLaw);buildLawAliasPattern();let cats=[...new Set(LAWS.map(x=>x.category))];$('#category').innerHTML='<option value="">全部10類</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');runSearch();renderLaws();renderArticleList();runLetterSearch();buildRefIndexAsync()}).catch(e=>{$('#searchStatus').textContent='資料載入失敗。請使用 VS Code Live Server 或 GitHub Pages 開啟。';console.error(e)});
 let timer;document.addEventListener('click',e=>{
+
+let letterLawClose=e.target.closest('.letter-law-preview-close');
+if(letterLawClose){
+  const tools=letterLawClose.closest('.letter-law-tools');
+  const idx=letterLawClose.dataset.letterLawIndex;
+  const check=tools?.querySelector(`.letter-law-check[data-letter-law-index="${idx}"]`);
+  if(check)check.checked=false;
+  refreshLetterLawPreviews(letterLawClose.dataset.letterId);
+  return;
+}
 let seg=e.target.closest('.article-law-seg');
 if(seg){
   const law=seg.dataset.law;
@@ -267,4 +331,18 @@ if(seg){
   }
   return;
 }
-let toggle=e.target.closest('.lawhits-toggle');if(toggle){let group=toggle.closest('.lawhits-group'),groups=[...group.querySelectorAll('.lawhit-law-group')],allOpen=groups.length&&groups.every(g=>!g.querySelector('.lawhit-law-body').hidden),opening=!allOpen,label=toggle.querySelector('.lawhits-toggle-label');groups.forEach(g=>{let body=g.querySelector('.lawhit-law-body'),btn=g.querySelector('.lawhit-law-toggle'),lab=g.querySelector('.lawhit-law-toggle-label');body.hidden=!opening;btn.setAttribute('aria-expanded',String(opening));g.classList.toggle('expanded',opening);g.classList.toggle('collapsed',!opening);if(lab)lab.textContent=opening?'▲ 收合':'▼ 展開'});toggle.setAttribute('aria-expanded',String(opening));group.classList.toggle('expanded',opening);group.classList.toggle('collapsed',!opening);if(label)label.textContent=opening?'▲ 全部收合':'▼ 全部展開';return;}let lawToggle=e.target.closest('.lawhit-law-toggle');if(lawToggle){let group=lawToggle.closest('.lawhit-law-group'),body=group?.querySelector('.lawhit-law-body'),label=lawToggle.querySelector('.lawhit-law-toggle-label');if(body){let opening=body.hidden;body.hidden=!opening;lawToggle.setAttribute('aria-expanded',String(opening));group.classList.toggle('expanded',opening);group.classList.toggle('collapsed',!opening);if(label)label.textContent=opening?'▲ 收合':'▼ 展開';}return;}let previewPoint=e.target.closest('.lawhit-point');if(previewPoint){e.preventDefault();openSearchLawPreview(previewPoint.dataset.lawname,previewPoint.dataset.target||'',previewPoint.dataset.targetkey||'',previewPoint.dataset.search||'');return;}let closePreview=e.target.closest('.search-preview-close');if(closePreview){$('#searchLawPreview').hidden=true;return;}let fullLaw=e.target.closest('.open-full-law');if(fullLaw){e.preventDefault();openLaw(fullLaw.dataset.fullLawname,fullLaw.dataset.fullTarget||'',fullLaw.dataset.fullTargetkey||'',fullLaw.dataset.fullSearch||'');return;}let t=e.target.closest('.tab');if(t)showView(t.dataset.view);let ln=e.target.closest('[data-lawname]');if(ln){e.preventDefault();openLaw(ln.dataset.lawname,ln.dataset.target||'',ln.dataset.targetkey||'',ln.dataset.search||'')}let ar=e.target.closest('.article-row');if(ar)selectArticle(ar.dataset.a);let lr=e.target.closest('.lawref');if(lr){e.preventDefault();openDrawer(lr.dataset.law,lr.dataset.a)}let gl=e.target.closest('.gotoletter');if(gl){e.preventDefault();gotoLetter(+gl.dataset.id)}});$('#q').oninput=()=>{clearTimeout(timer);timer=setTimeout(runSearch,140)};$('#scope').onchange=runSearch;$('#full').onchange=runSearch;$('#clear').onclick=()=>{$('#q').value='';runSearch()};$('#more').onclick=renderSearchMore;$('#lawq').oninput=renderLaws;$('#category').onchange=renderLaws;$('#backLaws').onclick=()=>showView('laws');$('#articleLaw').onchange=()=>{renderArticleList();$('#articleDetail').innerHTML='<div class="empty">請選擇條文</div>'};$('#lq').oninput=()=>{clearTimeout(timer);timer=setTimeout(runLetterSearch,140)};$('#lscope').onchange=runLetterSearch;$('#lsort').onchange=runLetterSearch;$('#lfull').onchange=runLetterSearch;$('#lclear').onclick=()=>{$('#lq').value='';runLetterSearch()};$('#lmore').onclick=renderLetterMore;$('#drawerClose').onclick=()=>{$('#drawer').hidden=true;document.body.classList.remove('drawer-open')};
+let toggle=e.target.closest('.lawhits-toggle');if(toggle){let group=toggle.closest('.lawhits-group'),groups=[...group.querySelectorAll('.lawhit-law-group')],allOpen=groups.length&&groups.every(g=>!g.querySelector('.lawhit-law-body').hidden),opening=!allOpen,label=toggle.querySelector('.lawhits-toggle-label');groups.forEach(g=>{let body=g.querySelector('.lawhit-law-body'),btn=g.querySelector('.lawhit-law-toggle'),lab=g.querySelector('.lawhit-law-toggle-label');body.hidden=!opening;btn.setAttribute('aria-expanded',String(opening));g.classList.toggle('expanded',opening);g.classList.toggle('collapsed',!opening);if(lab)lab.textContent=opening?'▲ 收合':'▼ 展開'});toggle.setAttribute('aria-expanded',String(opening));group.classList.toggle('expanded',opening);group.classList.toggle('collapsed',!opening);if(label)label.textContent=opening?'▲ 全部收合':'▼ 全部展開';return;}let lawToggle=e.target.closest('.lawhit-law-toggle');if(lawToggle){let group=lawToggle.closest('.lawhit-law-group'),body=group?.querySelector('.lawhit-law-body'),label=lawToggle.querySelector('.lawhit-law-toggle-label');if(body){let opening=body.hidden;body.hidden=!opening;lawToggle.setAttribute('aria-expanded',String(opening));group.classList.toggle('expanded',opening);group.classList.toggle('collapsed',!opening);if(label)label.textContent=opening?'▲ 收合':'▼ 展開';}return;}let previewPoint=e.target.closest('.lawhit-point');if(previewPoint){e.preventDefault();openSearchLawPreview(previewPoint.dataset.lawname,previewPoint.dataset.target||'',previewPoint.dataset.targetkey||'',previewPoint.dataset.search||'');return;}let closePreview=e.target.closest('.search-preview-close');if(closePreview){closeSearchLawPreview();return;}let fullLaw=e.target.closest('.open-full-law');if(fullLaw){e.preventDefault();openLaw(fullLaw.dataset.fullLawname,fullLaw.dataset.fullTarget||'',fullLaw.dataset.fullTargetkey||'',fullLaw.dataset.fullSearch||'');return;}let t=e.target.closest('.tab');if(t)showView(t.dataset.view);let ln=e.target.closest('[data-lawname]');if(ln){e.preventDefault();openLaw(ln.dataset.lawname,ln.dataset.target||'',ln.dataset.targetkey||'',ln.dataset.search||'')}let ar=e.target.closest('.article-row');if(ar)selectArticle(ar.dataset.a);let lr=e.target.closest('.lawref');if(lr){e.preventDefault();openDrawer(lr.dataset.law,lr.dataset.a)}let gl=e.target.closest('.gotoletter');if(gl){e.preventDefault();gotoLetter(+gl.dataset.id)}});
+document.addEventListener('change',e=>{
+  const c=e.target.closest('.letter-law-check');
+  if(c){
+    closeSearchLawPreview();
+    refreshLetterLawPreviews(c.dataset.letterId);
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const p=$('#searchLawPreview');
+    if(p && !p.hidden){closeSearchLawPreview();}
+  }
+});
+$('#q').oninput=()=>{clearTimeout(timer);timer=setTimeout(runSearch,140)};$('#scope').onchange=runSearch;$('#full').onchange=runSearch;$('#clear').onclick=()=>{$('#q').value='';runSearch()};$('#more').onclick=renderSearchMore;$('#lawq').oninput=renderLaws;$('#category').onchange=renderLaws;$('#backLaws').onclick=()=>showView('laws');$('#articleLaw').onchange=()=>{renderArticleList();$('#articleDetail').innerHTML='<div class="empty">請選擇條文</div>'};$('#lq').oninput=()=>{clearTimeout(timer);timer=setTimeout(runLetterSearch,140)};$('#lscope').onchange=runLetterSearch;$('#lsort').onchange=runLetterSearch;$('#lfull').onchange=runLetterSearch;$('#lclear').onclick=()=>{$('#lq').value='';runLetterSearch()};$('#lmore').onclick=renderLetterMore;$('#drawerClose').onclick=()=>{$('#drawer').hidden=true;document.body.classList.remove('drawer-open')};
