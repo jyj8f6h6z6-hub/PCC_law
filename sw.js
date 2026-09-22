@@ -1,7 +1,7 @@
-const CACHE = 'pcc-e-law-v6.12-20260921';
+const CACHE = 'pcc-e-law-v6.14-20260922';
 const CORE = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './offline.html',
-  './data/laws.json', './data/letters.json'
+  './data/laws.json', './data/letters.json', './data/act_rules_map.json', './json/政府採購法.json', './json/政府採購法施行細則.json'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
