@@ -212,7 +212,7 @@ function renderLetterLawPreview(r,lawName,articles,idx){
   let content='';
   if(l.articles?.length){
     content=l.articles.map(a=>{
-      const key=articleKey(a.no),hit=articleSet.has(key);
+      const key=String(a.no||'').replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,''),hit=articleSet.has(key);
       return `<section class="preview-law-article${hit?' search-target':''}" id="letter-${r.index}-law-${idx}-${encodeURIComponent(key)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text,[])}</div></section>`;
     }).join('');
   }else{
@@ -336,7 +336,8 @@ document.addEventListener('change',e=>{
   const c=e.target.closest('.letter-law-check');
   if(c){
     closeSearchLawPreview();
-    refreshLetterLawPreviews(c.dataset.letterId);
+    try{refreshLetterLawPreviews(c.dataset.letterId)}
+    catch(err){console.error('函釋對照法規顯示失敗',err);c.checked=false;alert('對照法規顯示失敗，請重新整理頁面後再試。')}
   }
 });
 document.addEventListener('keydown',e=>{
