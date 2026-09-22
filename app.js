@@ -211,9 +211,12 @@ function renderLetterLawPreview(r,lawName,articles,idx){
   let articleSet=new Set(articles);
   let content='';
   if(l.articles?.length){
-    content=l.articles.map(a=>{
-      const key=String(a.no||'').replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,''),hit=articleSet.has(key);
-      return `<section class="preview-law-article${hit?' search-target':''}" id="letter-${r.index}-law-${idx}-${encodeURIComponent(key)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text,[])}</div></section>`;
+    content=l.articles.filter(a=>{
+      const key=String(a.no||'').replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'');
+      return articleSet.has(key);
+    }).map(a=>{
+      const key=String(a.no||'').replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'');
+      return `<section class="preview-law-article search-target" id="letter-${r.index}-law-${idx}-${encodeURIComponent(key)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text,[])}</div></section>`;
     }).join('');
   }else{
     content=`<div class="preview-fulltext">${linkRefs(l.fullText||'（無全文內容）',[])}</div>`;

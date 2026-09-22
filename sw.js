@@ -1,4 +1,4 @@
-const CACHE = 'pcc-e-law-v6.17.1-20260922';
+const CACHE = 'pcc-e-law-v6.17.2-20260922';
 const CORE = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './offline.html',
   './data/laws.json', './data/letters.json', './data/act_rules_map.json', './json/政府採購法.json', './json/政府採購法施行細則.json'
