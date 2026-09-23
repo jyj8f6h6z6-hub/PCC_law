@@ -1,0 +1,1615 @@
+{
+  "version": "1.0-harvest",
+  "updated": "2026-09-23",
+  "purpose": "蒐集政府採購實務的人話問句，供 procurement_concepts 概念庫延伸與自然語言搜尋壓力測試使用；不是法律答案資料庫。",
+  "method": {
+    "web_questions": "以政府機關公開採購Q&A為主要來源，將長篇個案提問壓縮成保留原意的人話搜尋句。",
+    "synthetic_variants": "僅在已有公開案例語意基礎上產生少量口語變體，並明確標記 synthetic_variant。",
+    "answers_excluded": true,
+    "legal_conclusions_excluded": true
+  },
+  "stats": {
+    "total": 112,
+    "by_category": {
+      "保證金": 11,
+      "停權": 3,
+      "契約變更": 15,
+      "工期展延": 2,
+      "底價": 4,
+      "廠商資格": 9,
+      "後續擴充": 17,
+      "押標金": 5,
+      "採購金額門檻": 1,
+      "最有利標": 3,
+      "流標廢標": 12,
+      "異議申訴": 4,
+      "監辦": 3,
+      "逾期違約金": 6,
+      "驗收": 17
+    },
+    "by_type": {
+      "paraphrase": 46,
+      "synthetic_variant": 64,
+      "user_phrase": 2
+    }
+  },
+  "queries": [
+    {
+      "id": "Q0001",
+      "q": "開口契約到期了，但新契約還沒簽，可以先讓原廠商繼續做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "開口契約",
+        "契約到期",
+        "原廠商",
+        "新標未完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0002",
+      "q": "後續擴充廠商可以不要做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "廠商拒絕",
+        "後續擴充",
+        "契約延長"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0003",
+      "q": "後續擴充要不要另外收履約保證金？",
+      "cat": "保證金",
+      "tags": [
+        "後續擴充",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0004",
+      "q": "後續擴充的驗收可以跟原契約分開辦嗎？",
+      "cat": "驗收",
+      "tags": [
+        "後續擴充",
+        "驗收",
+        "原契約"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0005",
+      "q": "契約寫保留增購60%，到底是用總價算還是單項金額算？",
+      "cat": "後續擴充",
+      "tags": [
+        "後續增購",
+        "百分比",
+        "契約總價",
+        "單項"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=143&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0006",
+      "q": "原契約已經到期也驗收完了，還可以再辦後續擴充嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "契約到期",
+        "驗收完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=3805&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0007",
+      "q": "後續擴充可以用原單價直接續約，不議價嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "原單價",
+        "續約",
+        "議價",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=352",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0008",
+      "q": "後續擴充超過原本寫的金額，但還沒超過採購金額，可以做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "擴充上限",
+        "採購金額",
+        "金額條件"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0009",
+      "q": "第一次流標後改了圖說，還算第二次招標嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "流標",
+        "修改圖說",
+        "重新招標",
+        "第二次招標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=70",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0010",
+      "q": "流標後把保固金降低、工期延長，還能用原案號辦第二次招標嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "流標",
+        "保固金",
+        "工期",
+        "第二次招標",
+        "重大改變"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=54&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0011",
+      "q": "第一次招標家數不夠流標，底價要不要重訂？",
+      "cat": "底價",
+      "tags": [
+        "流標",
+        "底價",
+        "重新招標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/rwd/frontFunction/Affair/wfrmQA_detail.aspx?ID=171&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0012",
+      "q": "開標時拿錯前一次的底價，決標還算有效嗎？",
+      "cat": "底價",
+      "tags": [
+        "誤用底價",
+        "開標",
+        "決標效力"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=232",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0013",
+      "q": "廢標後重新招標，原來投標的廠商還可以再投嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "重新招標",
+        "廠商投標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0014",
+      "q": "廢標要不要再通知所有廠商來？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "通知廠商",
+        "開標程序"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=95",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0015",
+      "q": "廢標時主持人可以換人嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "主持人",
+        "開標程序"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=95",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0016",
+      "q": "契約總價結算，實際做的數量比契約多，要辦變更嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "實作數量",
+        "契約數量",
+        "契約總價結算",
+        "變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0017",
+      "q": "實作數量跟契約數量差不到10%，工程款要不要跟著增減？",
+      "cat": "契約變更",
+      "tags": [
+        "實作數量",
+        "百分比",
+        "工程款",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0018",
+      "q": "變更設計不增加契約金額，也要跑契約變更嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "變更設計",
+        "價金不變",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=265",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0019",
+      "q": "變更設計增加工期，要另外辦展延嗎？",
+      "cat": "工期展延",
+      "tags": [
+        "變更設計",
+        "增加工期",
+        "展延"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=265",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0020",
+      "q": "新增項目議價談不攏，廠商不簽變更契約怎麼辦？",
+      "cat": "契約變更",
+      "tags": [
+        "新增項目",
+        "議價不成",
+        "變更契約",
+        "廠商不簽"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=216",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0021",
+      "q": "契約變更新增項目一定要議價嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "新增項目",
+        "議價",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=111",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0022",
+      "q": "契約變更做到查核金額以上，要不要報上級監辦？",
+      "cat": "監辦",
+      "tags": [
+        "契約變更",
+        "查核金額",
+        "上級機關",
+        "監辦"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=111",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0023",
+      "q": "驗收時才發現數量跟契約不一樣，要先變更再驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "驗收",
+        "數量差異",
+        "契約變更",
+        "結算"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0024",
+      "q": "廠商交的型號不一樣，但功能一樣，可以驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "型號不同",
+        "功能相同",
+        "規格",
+        "驗收"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=11",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0025",
+      "q": "廠商交的東西規格比契約更好，可以直接驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "規格優於契約",
+        "驗收",
+        "契約不符"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0026",
+      "q": "驗收不合格，廠商不想換貨，可以減價收受嗎？",
+      "cat": "驗收",
+      "tags": [
+        "驗收不合格",
+        "換貨",
+        "減價收受"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0027",
+      "q": "驗收不合格又逾期，違約金要用減價前還是減價後的金額算？",
+      "cat": "逾期違約金",
+      "tags": [
+        "驗收不合格",
+        "減價收受",
+        "逾期違約金",
+        "計算基準"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=2351",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0028",
+      "q": "廠商在改善期限內申請減價收受，這段時間還算逾期嗎？",
+      "cat": "逾期違約金",
+      "tags": [
+        "改善期限",
+        "減價收受",
+        "逾期期間"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/Affair/wfrmQA_detail.aspx?ID=341",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0029",
+      "q": "複驗不合格後廠商一直提規格疑義，機關處理的時間算廠商逾期嗎？",
+      "cat": "逾期違約金",
+      "tags": [
+        "複驗不合格",
+        "規格疑義",
+        "逾期期間"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=425&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0030",
+      "q": "廠商資格寫印刷、廣告設計，是符合其中一項就可以還是兩項都要？",
+      "cat": "廠商資格",
+      "tags": [
+        "營業項目",
+        "資格條件",
+        "擇一",
+        "全部符合"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=477",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0031",
+      "q": "財團法人投標，也一定要附納稅證明跟信用證明嗎？",
+      "cat": "廠商資格",
+      "tags": [
+        "財團法人",
+        "納稅證明",
+        "信用證明",
+        "資格文件"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=88",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0032",
+      "q": "廠商不是營造業，但說自己有實績有能力，可以讓他投工程嗎？",
+      "cat": "廠商資格",
+      "tags": [
+        "營造業",
+        "實績",
+        "能力",
+        "工程資格"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=369",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0033",
+      "q": "招標資格漏勾非營利法人，公告後還能改嗎？",
+      "cat": "廠商資格",
+      "tags": [
+        "資格漏列",
+        "非營利法人",
+        "公告後修改",
+        "限制競爭"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA.aspx",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0034",
+      "q": "資格條件設太窄，會不會被認為限制競爭？",
+      "cat": "廠商資格",
+      "tags": [
+        "資格條件",
+        "限制競爭",
+        "投標資格"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA.aspx",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0035",
+      "q": "押標金支票受款人寫成上級機關，不是招標機關全名，算有效嗎？",
+      "cat": "押標金",
+      "tags": [
+        "押標金",
+        "支票",
+        "受款人",
+        "機關名稱",
+        "無效標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=24&print=1",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0036",
+      "q": "押標金可以收預算金額的10%以上嗎？",
+      "cat": "押標金",
+      "tags": [
+        "押標金",
+        "百分比",
+        "額度"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/rwd/frontFunction/Affair/wfrmQA_detail.aspx?ID=32",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0037",
+      "q": "押標金可以用銀行保證函嗎？",
+      "cat": "押標金",
+      "tags": [
+        "押標金",
+        "銀行保證函",
+        "繳納方式"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/Affair/wfrmQA_detail.aspx?ID=535",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0038",
+      "q": "契約金額增加了，履約保證金一定要跟著補嗎？",
+      "cat": "保證金",
+      "tags": [
+        "契約金額增加",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0039",
+      "q": "契約延長了，履約保證金要不要再加？",
+      "cat": "保證金",
+      "tags": [
+        "契約展延",
+        "履約保證金",
+        "延作"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0040",
+      "q": "履約保證金用定存單，還要設定比履約期限多幾天的有效期嗎？",
+      "cat": "保證金",
+      "tags": [
+        "履約保證金",
+        "定期存款單",
+        "有效期"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=140",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0041",
+      "q": "只有一家廠商投最有利標，可以把及格分數提高嗎？",
+      "cat": "最有利標",
+      "tags": [
+        "一家廠商",
+        "最有利標",
+        "及格分數",
+        "評選"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=94",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0042",
+      "q": "等標期不到10天，廠商提出異議的期限還是至少10天嗎？",
+      "cat": "異議申訴",
+      "tags": [
+        "等標期",
+        "異議",
+        "期限"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=97",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0043",
+      "q": "廠商只是對招標文件有疑問，算釋疑還是異議？",
+      "cat": "異議申訴",
+      "tags": [
+        "招標文件",
+        "釋疑",
+        "異議",
+        "期限"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=97",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0044",
+      "q": "廠商施工沒照進度，法院也判要賠錢但他不理，可以停權嗎？",
+      "cat": "停權",
+      "tags": [
+        "未依進度",
+        "判決",
+        "拒不履行",
+        "停權"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=28",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0045",
+      "q": "小額採購到底是『以下』還是『未達』門檻？剛好等於門檻算哪一種？",
+      "cat": "採購金額門檻",
+      "tags": [
+        "小額採購",
+        "門檻",
+        "以上以下",
+        "未達"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=418",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0046",
+      "q": "開口契約驗收紀錄的契約上限，要填預算上限還是連後續擴充一起算？",
+      "cat": "驗收",
+      "tags": [
+        "開口契約",
+        "驗收紀錄",
+        "上限金額",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA.aspx",
+      "type": "paraphrase"
+    },
+    {
+      "id": "Q0047",
+      "q": "開口契約到期了，但新契約還沒簽，可不可以先讓原廠商繼續做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "開口契約",
+        "契約到期",
+        "原廠商",
+        "新標未完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "開口契約到期了，但新契約還沒簽，可以先讓原廠商繼續做嗎？"
+    },
+    {
+      "id": "Q0048",
+      "q": "開口契約到期了，但新契約還沒簽，可以先讓原承商繼續做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "開口契約",
+        "契約到期",
+        "原廠商",
+        "新標未完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "開口契約到期了，但新契約還沒簽，可以先讓原廠商繼續做嗎？"
+    },
+    {
+      "id": "Q0049",
+      "q": "後續擴充廠商可不可以不要做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "廠商拒絕",
+        "後續擴充",
+        "契約延長"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充廠商可以不要做嗎？"
+    },
+    {
+      "id": "Q0050",
+      "q": "後續擴充承商可以不要做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "廠商拒絕",
+        "後續擴充",
+        "契約延長"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充廠商可以不要做嗎？"
+    },
+    {
+      "id": "Q0051",
+      "q": "後續擴充是否要另外收履約保證金？",
+      "cat": "保證金",
+      "tags": [
+        "後續擴充",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充要不要另外收履約保證金？"
+    },
+    {
+      "id": "Q0052",
+      "q": "後擴要不要另外收履約保證金？",
+      "cat": "保證金",
+      "tags": [
+        "後續擴充",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充要不要另外收履約保證金？"
+    },
+    {
+      "id": "Q0053",
+      "q": "後續擴充的驗收可不可以跟原契約分開辦嗎？",
+      "cat": "驗收",
+      "tags": [
+        "後續擴充",
+        "驗收",
+        "原契約"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充的驗收可以跟原契約分開辦嗎？"
+    },
+    {
+      "id": "Q0054",
+      "q": "後續擴充的驗收可以跟原合約分開辦嗎？",
+      "cat": "驗收",
+      "tags": [
+        "後續擴充",
+        "驗收",
+        "原契約"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/frontFunction/Affair/wfrmQA_detail.aspx?ID=311",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充的驗收可以跟原契約分開辦嗎？"
+    },
+    {
+      "id": "Q0055",
+      "q": "合約寫保留增購60%，到底是用總價算還是單項金額算？",
+      "cat": "後續擴充",
+      "tags": [
+        "後續增購",
+        "百分比",
+        "契約總價",
+        "單項"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=143&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "契約寫保留增購60%，到底是用總價算還是單項金額算？"
+    },
+    {
+      "id": "Q0056",
+      "q": "原契約已經到期也驗收完了，還可不可以再辦後續擴充嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "契約到期",
+        "驗收完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=3805&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "原契約已經到期也驗收完了，還可以再辦後續擴充嗎？"
+    },
+    {
+      "id": "Q0057",
+      "q": "原合約已經到期也驗收完了，還可以再辦後續擴充嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "契約到期",
+        "驗收完成",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=3805&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "原契約已經到期也驗收完了，還可以再辦後續擴充嗎？"
+    },
+    {
+      "id": "Q0058",
+      "q": "後續擴充可不可以用原單價直接續約，不議價嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "原單價",
+        "續約",
+        "議價",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=352",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充可以用原單價直接續約，不議價嗎？"
+    },
+    {
+      "id": "Q0059",
+      "q": "後擴可以用原單價直接續約，不議價嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "原單價",
+        "續約",
+        "議價",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=352",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充可以用原單價直接續約，不議價嗎？"
+    },
+    {
+      "id": "Q0060",
+      "q": "後續擴充超過原本寫的金額，但還沒超過採購金額，可不可以做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "擴充上限",
+        "採購金額",
+        "金額條件"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充超過原本寫的金額，但還沒超過採購金額，可以做嗎？"
+    },
+    {
+      "id": "Q0061",
+      "q": "後擴超過原本寫的金額，但還沒超過採購金額，可以做嗎？",
+      "cat": "後續擴充",
+      "tags": [
+        "擴充上限",
+        "採購金額",
+        "金額條件"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "synthetic_variant",
+      "derived_from": "後續擴充超過原本寫的金額，但還沒超過採購金額，可以做嗎？"
+    },
+    {
+      "id": "Q0062",
+      "q": "第一次沒人投流標後改了圖說，還算第二次招標嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "流標",
+        "修改圖說",
+        "重新招標",
+        "第二次招標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=70",
+      "type": "synthetic_variant",
+      "derived_from": "第一次流標後改了圖說，還算第二次招標嗎？"
+    },
+    {
+      "id": "Q0063",
+      "q": "沒人投流標後把保固金降低、工期延長，還能用原案號辦第二次招標嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "流標",
+        "保固金",
+        "工期",
+        "第二次招標",
+        "重大改變"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/forTest/RWD/frontFunction/Affair/wfrmQA_detail.aspx?ID=54&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "流標後把保固金降低、工期延長，還能用原案號辦第二次招標嗎？"
+    },
+    {
+      "id": "Q0064",
+      "q": "第一次招標家數不夠流標，底價是否要重訂？",
+      "cat": "底價",
+      "tags": [
+        "流標",
+        "底價",
+        "重新招標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/rwd/frontFunction/Affair/wfrmQA_detail.aspx?ID=171&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "第一次招標家數不夠流標，底價要不要重訂？"
+    },
+    {
+      "id": "Q0065",
+      "q": "第一次招標家數不夠沒人投流標，底價要不要重訂？",
+      "cat": "底價",
+      "tags": [
+        "流標",
+        "底價",
+        "重新招標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/rwd/frontFunction/Affair/wfrmQA_detail.aspx?ID=171&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "第一次招標家數不夠流標，底價要不要重訂？"
+    },
+    {
+      "id": "Q0066",
+      "q": "廢標後重新招標，原來投標的廠商還可不可以再投嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "重新招標",
+        "廠商投標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "synthetic_variant",
+      "derived_from": "廢標後重新招標，原來投標的廠商還可以再投嗎？"
+    },
+    {
+      "id": "Q0067",
+      "q": "廢標後重新招標，原來投標的承商還可以再投嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "重新招標",
+        "廠商投標"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmqa.aspx?Page=3",
+      "type": "synthetic_variant",
+      "derived_from": "廢標後重新招標，原來投標的廠商還可以再投嗎？"
+    },
+    {
+      "id": "Q0068",
+      "q": "廢標是否要再通知所有廠商來？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "通知廠商",
+        "開標程序"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=95",
+      "type": "synthetic_variant",
+      "derived_from": "廢標要不要再通知所有廠商來？"
+    },
+    {
+      "id": "Q0069",
+      "q": "廢標要不要再通知所有承商來？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "通知廠商",
+        "開標程序"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=95",
+      "type": "synthetic_variant",
+      "derived_from": "廢標要不要再通知所有廠商來？"
+    },
+    {
+      "id": "Q0070",
+      "q": "廢標時主持人可不可以換人嗎？",
+      "cat": "流標廢標",
+      "tags": [
+        "廢標",
+        "主持人",
+        "開標程序"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=95",
+      "type": "synthetic_variant",
+      "derived_from": "廢標時主持人可以換人嗎？"
+    },
+    {
+      "id": "Q0071",
+      "q": "合約總價結算，實際做的數量比契約多，要辦變更嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "實作數量",
+        "契約數量",
+        "契約總價結算",
+        "變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "synthetic_variant",
+      "derived_from": "契約總價結算，實際做的數量比契約多，要辦變更嗎？"
+    },
+    {
+      "id": "Q0072",
+      "q": "實作數量跟契約數量差不到10%，工程款是否要跟著增減？",
+      "cat": "契約變更",
+      "tags": [
+        "實作數量",
+        "百分比",
+        "工程款",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "synthetic_variant",
+      "derived_from": "實作數量跟契約數量差不到10%，工程款要不要跟著增減？"
+    },
+    {
+      "id": "Q0073",
+      "q": "實作數量跟合約數量差不到10%，工程款要不要跟著增減？",
+      "cat": "契約變更",
+      "tags": [
+        "實作數量",
+        "百分比",
+        "工程款",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "synthetic_variant",
+      "derived_from": "實作數量跟契約數量差不到10%，工程款要不要跟著增減？"
+    },
+    {
+      "id": "Q0074",
+      "q": "變更設計不增加合約金額，也要跑契約變更嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "變更設計",
+        "價金不變",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=265",
+      "type": "synthetic_variant",
+      "derived_from": "變更設計不增加契約金額，也要跑契約變更嗎？"
+    },
+    {
+      "id": "Q0075",
+      "q": "設計變更不增加契約金額，也要跑契約變更嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "變更設計",
+        "價金不變",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=265",
+      "type": "synthetic_variant",
+      "derived_from": "變更設計不增加契約金額，也要跑契約變更嗎？"
+    },
+    {
+      "id": "Q0076",
+      "q": "設計變更增加工期，要另外辦展延嗎？",
+      "cat": "工期展延",
+      "tags": [
+        "變更設計",
+        "增加工期",
+        "展延"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=265",
+      "type": "synthetic_variant",
+      "derived_from": "變更設計增加工期，要另外辦展延嗎？"
+    },
+    {
+      "id": "Q0077",
+      "q": "新增項目議價談不攏，承商不簽變更契約怎麼辦？",
+      "cat": "契約變更",
+      "tags": [
+        "新增項目",
+        "議價不成",
+        "變更契約",
+        "廠商不簽"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=216",
+      "type": "synthetic_variant",
+      "derived_from": "新增項目議價談不攏，廠商不簽變更契約怎麼辦？"
+    },
+    {
+      "id": "Q0078",
+      "q": "新增項目議價談不攏，廠商不簽變更合約怎麼辦？",
+      "cat": "契約變更",
+      "tags": [
+        "新增項目",
+        "議價不成",
+        "變更契約",
+        "廠商不簽"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=216",
+      "type": "synthetic_variant",
+      "derived_from": "新增項目議價談不攏，廠商不簽變更契約怎麼辦？"
+    },
+    {
+      "id": "Q0079",
+      "q": "合約變更新增項目一定要議價嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "新增項目",
+        "議價",
+        "契約變更"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=111",
+      "type": "synthetic_variant",
+      "derived_from": "契約變更新增項目一定要議價嗎？"
+    },
+    {
+      "id": "Q0080",
+      "q": "契約變更做到查核金額以上，是否要報上級監辦？",
+      "cat": "監辦",
+      "tags": [
+        "契約變更",
+        "查核金額",
+        "上級機關",
+        "監辦"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=111",
+      "type": "synthetic_variant",
+      "derived_from": "契約變更做到查核金額以上，要不要報上級監辦？"
+    },
+    {
+      "id": "Q0081",
+      "q": "合約變更做到查核金額以上，要不要報上級監辦？",
+      "cat": "監辦",
+      "tags": [
+        "契約變更",
+        "查核金額",
+        "上級機關",
+        "監辦"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=111",
+      "type": "synthetic_variant",
+      "derived_from": "契約變更做到查核金額以上，要不要報上級監辦？"
+    },
+    {
+      "id": "Q0082",
+      "q": "驗收時才發現數量跟合約不一樣，要先變更再驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "驗收",
+        "數量差異",
+        "契約變更",
+        "結算"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=495",
+      "type": "synthetic_variant",
+      "derived_from": "驗收時才發現數量跟契約不一樣，要先變更再驗收嗎？"
+    },
+    {
+      "id": "Q0083",
+      "q": "廠商交的型號不一樣，但功能一樣，可不可以驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "型號不同",
+        "功能相同",
+        "規格",
+        "驗收"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=11",
+      "type": "synthetic_variant",
+      "derived_from": "廠商交的型號不一樣，但功能一樣，可以驗收嗎？"
+    },
+    {
+      "id": "Q0084",
+      "q": "承商交的型號不一樣，但功能一樣，可以驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "型號不同",
+        "功能相同",
+        "規格",
+        "驗收"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=11",
+      "type": "synthetic_variant",
+      "derived_from": "廠商交的型號不一樣，但功能一樣，可以驗收嗎？"
+    },
+    {
+      "id": "Q0085",
+      "q": "廠商交的東西規格比契約更好，可不可以直接驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "規格優於契約",
+        "驗收",
+        "契約不符"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "synthetic_variant",
+      "derived_from": "廠商交的東西規格比契約更好，可以直接驗收嗎？"
+    },
+    {
+      "id": "Q0086",
+      "q": "承商交的東西規格比契約更好，可以直接驗收嗎？",
+      "cat": "驗收",
+      "tags": [
+        "規格優於契約",
+        "驗收",
+        "契約不符"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "synthetic_variant",
+      "derived_from": "廠商交的東西規格比契約更好，可以直接驗收嗎？"
+    },
+    {
+      "id": "Q0087",
+      "q": "驗收不合格，廠商不想換貨，可不可以減價收受嗎？",
+      "cat": "驗收",
+      "tags": [
+        "驗收不合格",
+        "換貨",
+        "減價收受"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "synthetic_variant",
+      "derived_from": "驗收不合格，廠商不想換貨，可以減價收受嗎？"
+    },
+    {
+      "id": "Q0088",
+      "q": "驗收不合格，承商不想換貨，可以減價收受嗎？",
+      "cat": "驗收",
+      "tags": [
+        "驗收不合格",
+        "換貨",
+        "減價收受"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=187",
+      "type": "synthetic_variant",
+      "derived_from": "驗收不合格，廠商不想換貨，可以減價收受嗎？"
+    },
+    {
+      "id": "Q0089",
+      "q": "驗收沒過又逾期，違約金要用減價前還是減價後的金額算？",
+      "cat": "逾期違約金",
+      "tags": [
+        "驗收不合格",
+        "減價收受",
+        "逾期違約金",
+        "計算基準"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=2351",
+      "type": "synthetic_variant",
+      "derived_from": "驗收不合格又逾期，違約金要用減價前還是減價後的金額算？"
+    },
+    {
+      "id": "Q0090",
+      "q": "承商在改善期限內申請減價收受，這段時間還算逾期嗎？",
+      "cat": "逾期違約金",
+      "tags": [
+        "改善期限",
+        "減價收受",
+        "逾期期間"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/Affair/wfrmQA_detail.aspx?ID=341",
+      "type": "synthetic_variant",
+      "derived_from": "廠商在改善期限內申請減價收受，這段時間還算逾期嗎？"
+    },
+    {
+      "id": "Q0091",
+      "q": "複驗不合格後承商一直提規格疑義，機關處理的時間算廠商逾期嗎？",
+      "cat": "逾期違約金",
+      "tags": [
+        "複驗不合格",
+        "規格疑義",
+        "逾期期間"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=425&print=1",
+      "type": "synthetic_variant",
+      "derived_from": "複驗不合格後廠商一直提規格疑義，機關處理的時間算廠商逾期嗎？"
+    },
+    {
+      "id": "Q0092",
+      "q": "廠商資格寫印刷、廣告設計，是符合其中一項就可不可以還是兩項都要？",
+      "cat": "廠商資格",
+      "tags": [
+        "營業項目",
+        "資格條件",
+        "擇一",
+        "全部符合"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=477",
+      "type": "synthetic_variant",
+      "derived_from": "廠商資格寫印刷、廣告設計，是符合其中一項就可以還是兩項都要？"
+    },
+    {
+      "id": "Q0093",
+      "q": "承商資格寫印刷、廣告設計，是符合其中一項就可以還是兩項都要？",
+      "cat": "廠商資格",
+      "tags": [
+        "營業項目",
+        "資格條件",
+        "擇一",
+        "全部符合"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=477",
+      "type": "synthetic_variant",
+      "derived_from": "廠商資格寫印刷、廣告設計，是符合其中一項就可以還是兩項都要？"
+    },
+    {
+      "id": "Q0094",
+      "q": "廠商不是營造業，但說自己有實績有能力，可不可以讓他投工程嗎？",
+      "cat": "廠商資格",
+      "tags": [
+        "營造業",
+        "實績",
+        "能力",
+        "工程資格"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=369",
+      "type": "synthetic_variant",
+      "derived_from": "廠商不是營造業，但說自己有實績有能力，可以讓他投工程嗎？"
+    },
+    {
+      "id": "Q0095",
+      "q": "承商不是營造業，但說自己有實績有能力，可以讓他投工程嗎？",
+      "cat": "廠商資格",
+      "tags": [
+        "營造業",
+        "實績",
+        "能力",
+        "工程資格"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=369",
+      "type": "synthetic_variant",
+      "derived_from": "廠商不是營造業，但說自己有實績有能力，可以讓他投工程嗎？"
+    },
+    {
+      "id": "Q0096",
+      "q": "押標金可不可以收預算金額的10%以上嗎？",
+      "cat": "押標金",
+      "tags": [
+        "押標金",
+        "百分比",
+        "額度"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/rwd/frontFunction/Affair/wfrmQA_detail.aspx?ID=32",
+      "type": "synthetic_variant",
+      "derived_from": "押標金可以收預算金額的10%以上嗎？"
+    },
+    {
+      "id": "Q0097",
+      "q": "押標金可不可以用銀行保證函嗎？",
+      "cat": "押標金",
+      "tags": [
+        "押標金",
+        "銀行保證函",
+        "繳納方式"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/Affair/wfrmQA_detail.aspx?ID=535",
+      "type": "synthetic_variant",
+      "derived_from": "押標金可以用銀行保證函嗎？"
+    },
+    {
+      "id": "Q0098",
+      "q": "合約金額增加了，履約保證金一定要跟著補嗎？",
+      "cat": "保證金",
+      "tags": [
+        "契約金額增加",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "synthetic_variant",
+      "derived_from": "契約金額增加了，履約保證金一定要跟著補嗎？"
+    },
+    {
+      "id": "Q0099",
+      "q": "契約金額增加了，履保金一定要跟著補嗎？",
+      "cat": "保證金",
+      "tags": [
+        "契約金額增加",
+        "履約保證金",
+        "補足"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "synthetic_variant",
+      "derived_from": "契約金額增加了，履約保證金一定要跟著補嗎？"
+    },
+    {
+      "id": "Q0100",
+      "q": "契約延長了，履約保證金是否要再加？",
+      "cat": "保證金",
+      "tags": [
+        "契約展延",
+        "履約保證金",
+        "延作"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "synthetic_variant",
+      "derived_from": "契約延長了，履約保證金要不要再加？"
+    },
+    {
+      "id": "Q0101",
+      "q": "合約延長了，履約保證金要不要再加？",
+      "cat": "保證金",
+      "tags": [
+        "契約展延",
+        "履約保證金",
+        "延作"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontFunction/Affair/wfrmQA_detail.aspx?ID=503",
+      "type": "synthetic_variant",
+      "derived_from": "契約延長了，履約保證金要不要再加？"
+    },
+    {
+      "id": "Q0102",
+      "q": "履保金用定存單，還要設定比履約期限多幾天的有效期嗎？",
+      "cat": "保證金",
+      "tags": [
+        "履約保證金",
+        "定期存款單",
+        "有效期"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=140",
+      "type": "synthetic_variant",
+      "derived_from": "履約保證金用定存單，還要設定比履約期限多幾天的有效期嗎？"
+    },
+    {
+      "id": "Q0103",
+      "q": "只有一家廠商投最有利標，可不可以把及格分數提高嗎？",
+      "cat": "最有利標",
+      "tags": [
+        "一家廠商",
+        "最有利標",
+        "及格分數",
+        "評選"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=94",
+      "type": "synthetic_variant",
+      "derived_from": "只有一家廠商投最有利標，可以把及格分數提高嗎？"
+    },
+    {
+      "id": "Q0104",
+      "q": "只有一家承商投最有利標，可以把及格分數提高嗎？",
+      "cat": "最有利標",
+      "tags": [
+        "一家廠商",
+        "最有利標",
+        "及格分數",
+        "評選"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA_detail.aspx?ID=94",
+      "type": "synthetic_variant",
+      "derived_from": "只有一家廠商投最有利標，可以把及格分數提高嗎？"
+    },
+    {
+      "id": "Q0105",
+      "q": "等標期不到10天，承商提出異議的期限還是至少10天嗎？",
+      "cat": "異議申訴",
+      "tags": [
+        "等標期",
+        "異議",
+        "期限"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=97",
+      "type": "synthetic_variant",
+      "derived_from": "等標期不到10天，廠商提出異議的期限還是至少10天嗎？"
+    },
+    {
+      "id": "Q0106",
+      "q": "承商只是對招標文件有疑問，算釋疑還是異議？",
+      "cat": "異議申訴",
+      "tags": [
+        "招標文件",
+        "釋疑",
+        "異議",
+        "期限"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=97",
+      "type": "synthetic_variant",
+      "derived_from": "廠商只是對招標文件有疑問，算釋疑還是異議？"
+    },
+    {
+      "id": "Q0107",
+      "q": "廠商施工沒照進度，法院也判要賠錢但他不理，可不可以停權嗎？",
+      "cat": "停權",
+      "tags": [
+        "未依進度",
+        "判決",
+        "拒不履行",
+        "停權"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=28",
+      "type": "synthetic_variant",
+      "derived_from": "廠商施工沒照進度，法院也判要賠錢但他不理，可以停權嗎？"
+    },
+    {
+      "id": "Q0108",
+      "q": "承商施工沒照進度，法院也判要賠錢但他不理，可以停權嗎？",
+      "cat": "停權",
+      "tags": [
+        "未依進度",
+        "判決",
+        "拒不履行",
+        "停權"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/frontfunction/affair/wfrmQA_detail.aspx?ID=28",
+      "type": "synthetic_variant",
+      "derived_from": "廠商施工沒照進度，法院也判要賠錢但他不理，可以停權嗎？"
+    },
+    {
+      "id": "Q0109",
+      "q": "開口合約驗收紀錄的契約上限，要填預算上限還是連後續擴充一起算？",
+      "cat": "驗收",
+      "tags": [
+        "開口契約",
+        "驗收紀錄",
+        "上限金額",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA.aspx",
+      "type": "synthetic_variant",
+      "derived_from": "開口契約驗收紀錄的契約上限，要填預算上限還是連後續擴充一起算？"
+    },
+    {
+      "id": "Q0110",
+      "q": "開口契約驗收紀錄的契約上限，要填預算上限還是連後擴一起算？",
+      "cat": "驗收",
+      "tags": [
+        "開口契約",
+        "驗收紀錄",
+        "上限金額",
+        "後續擴充"
+      ],
+      "source": "臺北市政府採購業務資訊網",
+      "url": "https://gpis.taipei/RWD/frontfunction/affair/wfrmQA.aspx",
+      "type": "synthetic_variant",
+      "derived_from": "開口契約驗收紀錄的契約上限，要填預算上限還是連後續擴充一起算？"
+    },
+    {
+      "id": "Q0111",
+      "q": "變更設計要公告嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "變更設計",
+        "公告"
+      ],
+      "source": "current_conversation",
+      "url": null,
+      "type": "user_phrase"
+    },
+    {
+      "id": "Q0112",
+      "q": "變更設計不到15萬要公告嗎？",
+      "cat": "契約變更",
+      "tags": [
+        "變更設計",
+        "公告",
+        "15萬",
+        "金額條件"
+      ],
+      "source": "current_conversation",
+      "url": null,
+      "type": "user_phrase"
+    }
+  ]
+}
