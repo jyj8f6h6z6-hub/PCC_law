@@ -29,7 +29,25 @@ function normalizeLawDisplayData(laws){
   }
 }
 function lawText(l){return [l.name,l.category,l.published,l.updated,l.fullText,...l.articles.flatMap(a=>[a.no,a.text])].join('\n')}
-function letterText(r,scope='all'){if(scope==='basis')return r.basis||'';if(scope==='subject')return r.subject||'';if(scope==='body')return r.body||'';return [r.basis,r.subject,r.body,r.docNo,r.issuer,r.pkPrmsRuleContent].join(' ')}
+function cleanLetterBody(text){
+  text=String(text||'');
+  // 公文正文後的正本／副本／署名屬發送資訊；網站閱讀與搜尋不納入。
+  const m=text.match(/(?:^|\n|\r|\s)正本\s*[：:]/);
+  if(m)text=text.slice(0,m.index).trimEnd();
+  return text;
+}
+function displayLetterBody(text){
+  text=cleanLetterBody(text);
+  // 卡片上方已另列主旨；正文顯示時移除開頭重複的「主旨」段。
+  // 優先保留「說明／說明」起的內容，以兼容舊公文異體字。
+  if(/^\s*主旨\s*[：:]/.test(text)){
+    const m=text.match(/(?:^|\n)\s*(?:說明|說明)\s*[：:]/);
+    if(m)text=text.slice(m.index).replace(/^\s+/,'');
+    else text=text.replace(/^\s*主旨\s*[：:][^\r\n]*(?:\r?\n|$)/,'');
+  }
+  return text;
+}
+function letterText(r,scope='all'){if(scope==='basis')return r.basis||'';if(scope==='subject')return r.subject||'';if(scope==='body')return cleanLetterBody(r.body||'');return [r.basis,r.subject,cleanLetterBody(r.body||''),r.docNo,r.issuer,r.pkPrmsRuleContent].join(' ')}
 function hi(s,ts){let x=esc(s);for(const t of ts){let p=esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(p)x=x.replace(new RegExp(p,'gi'),m=>`<mark>${m}</mark>`)}return x}
 function key(law,no){return `${law}|${String(no).replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'')}`}
 function findArticle(law,no){let l=lawMap.get(law);if(!l)return null;let n=String(no).replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'');return l.articles.find(a=>a.no.replace(/^第/,'').replace(/條之/g,'-').replace(/條/g,'')===n)}
@@ -175,7 +193,7 @@ function linkRefs(text,ts=[]){
   return out+hi(text.slice(pos),ts);
 }
 function actRefsForLaw(l){let rs=refs(lawText(l)).filter(r=>r.law==='政府採購法'),u=[];for(const r of rs)if(!u.includes(r.a))u.push(r.a);return u}
-function letterRefs(r){if(LETTER_REF_CACHE.has(r.index))return LETTER_REF_CACHE.get(r.index);let t=(r.basis||'')+'\n'+(r.body||'')+'\n'+(r.subject||'');let rr=refs(t);LETTER_REF_CACHE.set(r.index,rr);return rr}
+function letterRefs(r){if(LETTER_REF_CACHE.has(r.index))return LETTER_REF_CACHE.get(r.index);let t=(r.basis||'')+'\n'+(cleanLetterBody(r.body||''))+'\n'+(r.subject||'');let rr=refs(t);LETTER_REF_CACHE.set(r.index,rr);return rr}
 function lettersFor(law,a){let k=law+'|'+a;if(REF_INDEX_READY){let ids=REF_INDEX.get(k)||[];return ids.map(id=>LETTERS.find(r=>r.index===id)).filter(Boolean)}return LETTERS.filter(r=>letterRefs(r).some(x=>x.law===law&&x.a===a))}
 function buildRefIndexAsync(){REF_INDEX.clear();EXACT_INDEX.clear();REF_INDEX_READY=false;let i=0;const chunk=()=>{let end=Math.min(i+40,LETTERS.length);for(;i<end;i++){let r=LETTERS[i];for(const x of refs(r.basis||'')){let k=x.law+'|'+x.a,arr=EXACT_INDEX.get(k);if(!arr)EXACT_INDEX.set(k,arr=[]);if(!arr.includes(r.index))arr.push(r.index)}for(const x of letterRefs(r)){let k=x.law+'|'+x.a,arr=REF_INDEX.get(k);if(!arr)REF_INDEX.set(k,arr=[]);if(!arr.includes(r.index))arr.push(r.index)}}if(i<LETTERS.length){setTimeout(chunk,0)}else{REF_INDEX_READY=true;refreshVisibleArticleCounts()}};setTimeout(chunk,0)}
 function refreshVisibleArticleCounts(){document.querySelectorAll('.article-count').forEach(c=>{let ids=REF_INDEX.get(c.dataset.countLaw+'|'+c.dataset.countA)||[];{let ex=(EXACT_INDEX.get(c.dataset.countLaw+'|'+c.dataset.countA)||[]).length;c.textContent=ex?ex+'筆精準／'+ids.length+'筆相關':ids.length+'筆相關'}})}
@@ -237,7 +255,7 @@ function refreshLetterLawPreviews(letterId){
     const target=card.querySelector('.search-target');if(target)card.querySelector('.letter-law-preview-scroll').scrollTop=Math.max(0,target.offsetTop-80);
   }));
 }
-function renderLetter(r,ts=[],full=true){return `<article class="letter" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4,'0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo,ts)}</span><span>${esc(r.issuer)}</span></div><div class="subject">${hi(r.subject||'(無主旨)',ts)}</div><div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis||'—',ts)}</div>${full?`<div class="body">${linkRefs(r.body||'',ts)}</div>`:''}${renderLetterLawChooser(r)}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`}
+function renderLetter(r,ts=[],full=true){return `<article class="letter" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4,'0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo,ts)}</span><span>${esc(r.issuer)}</span></div><div class="subject">${hi(r.subject||'(無主旨)',ts)}</div><div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis||'—',ts)}</div>${full?`<div class="body">${linkRefs(displayLetterBody(r.body||''),ts)}</div>`:''}${renderLetterLawChooser(r)}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.hidden=true);document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('#'+v+'View').hidden=false;if(v==='laws')renderLaws();if(v==='articles')renderArticleList();if(v==='letters'&&!letterRows.length)runLetterSearch()}
 function snippet(text,ts,span=72){
   text=String(text||'').replace(/\s+/g,' ').trim();
