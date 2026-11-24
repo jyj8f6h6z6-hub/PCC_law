@@ -922,3 +922,32 @@ header p.data-date {
   vertical-align: 2px;
   white-space: nowrap;
 }
+
+/* ── v6.20 函釋主題與備註 ───────────────────────────── */
+.letter-topic {
+  font-size: 13px;
+  color: #53666c;
+  margin: 6px 0 2px;
+}
+.letter-remark {
+  background: #fffaeb;
+  border: 1px solid #fedf89;
+  color: #93370d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+  line-height: 1.7;
+}
+.letter-remark.is-stop {
+  background: #fef3f2;
+  border-color: #fecdca;
+  color: #912018;
+}
+.letter.has-stop {
+  border-left: 4px solid #d92d20;
+}
+.stop-mark {
+  color: #b42318;
+  font-weight: 700;
+  font-size: 12px;
+}

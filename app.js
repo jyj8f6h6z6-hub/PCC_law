@@ -182,9 +182,9 @@ function displayLetterBody(text) {
 }
 function letterText(r, scope = 'all') {
   if (scope === 'basis') return r.basis || '';
-  if (scope === 'subject') return r.subject || '';
+  if (scope === 'subject') return [r.subject, r.topic].join(' ');
   if (scope === 'body') return cleanLetterBody(r.body || '');
-  return [r.basis, r.subject, cleanLetterBody(r.body || ''), r.docNo, r.issuer, r.pkPrmsRuleContent].join(
+  return [r.basis, r.subject, r.topic, r.remark, cleanLetterBody(r.body || ''), r.docNo, r.issuer, r.pkPrmsRuleContent].join(
     ' ',
   );
 }
@@ -529,8 +529,18 @@ function refreshLetterLawPreviews(letterId) {
     }),
   );
 }
+// 函釋的「廢止或補充之備註」（來自工程會開放資料）。
+// 備註常只涉及部分內容（例如「說明三停止適用」），所以原文照登，只用顏色提醒，不把整份函釋標為失效。
+const letterStopBadge = r =>
+  r.remarkStatus ? `<span class="badge-abolished" title="${esc(r.remark)}">停止適用備註</span>` : '';
+function letterRemarkHtml(r, ts = []) {
+  if (!r.remark) return '';
+  const stop = !!r.remarkStatus;
+  return `<div class="letter-remark${stop ? ' is-stop' : ''}"><b>${stop ? '⚠ 廢止或停止適用備註' : 'ℹ 補充備註'}：</b>${linkRefs(r.remark, ts)}</div>`;
+}
 function renderLetter(r, ts = [], full = true) {
-  return `<article class="letter" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4, '0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo, ts)}</span><span>${esc(r.issuer)}</span></div><div class="subject">${hi(r.subject || '(無主旨)', ts)}</div><div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis || '—', ts)}</div>${full ? `<div class="body">${linkRefs(displayLetterBody(r.body || ''), ts)}</div>` : ''}${renderLetterLawChooser(r)}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`;
+  const topic = r.topic && r.topic.replace(/\s/g, '') !== String(r.subject || '').replace(/\s/g, '') ? r.topic : '';
+  return `<article class="letter${r.remarkStatus ? ' has-stop' : ''}" id="letter-${r.index}"><div class="meta"><span class="idx">#${String(r.index).padStart(4, '0')}</span><span>${esc(r.rocDate)}</span><span>${hi(r.docNo, ts)}</span><span>${esc(r.issuer)}</span>${letterStopBadge(r)}</div>${topic ? `<div class="letter-topic">${hi(topic, ts)}</div>` : ''}<div class="subject">${hi(r.subject || '(無主旨)', ts)}</div>${letterRemarkHtml(r, ts)}<div class="basis"><b>PRMS原始法規依據：</b>${linkRefs(r.basis || '—', ts)}</div>${full ? `<div class="body">${linkRefs(displayLetterBody(r.body || ''), ts)}</div>` : ''}${renderLetterLawChooser(r)}<div class="actions"><a href="${esc(r.url)}" target="_blank" rel="noopener">工程會原文 ↗</a></div></article>`;
 }
 function showView(v) {
   document.querySelectorAll('.view').forEach(x => (x.hidden = true));
@@ -771,7 +781,7 @@ function selectArticle(a) {
       .slice(0, 120)
       .map(
         r =>
-          `<a href="#" class="related-link gotoletter" data-id="${r.index}">#${String(r.index).padStart(4, '0')}｜${esc(r.rocDate)}｜${esc(r.docNo)}<small>${esc(r.subject || '')}</small></a>`,
+          `<a href="#" class="related-link gotoletter" data-id="${r.index}">#${String(r.index).padStart(4, '0')}｜${esc(r.rocDate)}｜${esc(r.docNo)}${r.remarkStatus ? '　<span class="stop-mark" title="' + esc(r.remark) + '">⚠ 停止適用備註</span>' : ''}<small>${esc(r.subject || '')}</small></a>`,
       )
       .join('');
   let rulesHtml = relatedRules.length
