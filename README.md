@@ -21,6 +21,18 @@
 | `json/procurement_act.json` | 政府採購法逐條 |
 | `json/procurement_rules.json` | 政府採購法施行細則逐條 |
 
+## 程式碼慣例
+
+- **條號換算只寫在 `app.js` 開頭一處**：
+  - `articleKey('第5條之1')` → `'5-1'`：內部比對、索引、對照表都用這個值。
+  - `displayArticleNo('第5-1條')` → `'第5條之1'`：資料中的原始條號轉成畫面顯示。
+  - `articleLabel('5-1')` → `'第5條之1'`：內部值轉成畫面顯示。
+  - 需要換算條號時一律呼叫這三個函式，不要另外寫 `replace(...)`。
+- **資料筆數不要寫死**：`index.html` 裡用 `<span data-stat="laws">145</span>`（`laws`／`letters`／`cats`）標記，
+  資料載入後 `fillStats()` 會自動換成實際筆數；`app.js` 中請用 `STATS.laws` 等變數。
+- **排版**：用 VS Code 的「格式化文件」（Windows：Shift+Alt+F；Mac：Shift+Option+F）。
+  若安裝 Prettier 擴充套件，建議設定：單引號、每行 110 字。
+
 **不要放進這個資料夾的東西**：備份用的 zip、下載器、尚未啟用的資料檔。
 GitHub Pages 上的每個檔案都可以被任何人直接下載。
 
@@ -47,6 +59,14 @@ GitHub Pages 上的每個檔案都可以被任何人直接下載。
 4. 安裝後開啟一次，再切飛航模式測試。
 
 ## 版本紀錄
+
+### v6.18（2026-11-24）可維護性整理
+- `app.js`、`style.css`、`index.html` 重新排版為多行格式，功能不變。
+- 條號換算整合為 `articleKey`／`displayArticleNo`／`articleLabel` 三個函式，移除 6 處重複寫法及未使用的 `key()`。
+- 頁面上的「145筆」「3,666筆」「10類」改由資料自動計算。
+- 修正：法條連結的滑鼠提示文字多一個「條」（例如「第15條之1條」）。
+- 修正：搜尋結果、右側預覽、完整法規頁的增訂條號仍顯示「第5-1條」，現統一為「第5條之1」（共 71 條）。
+- 經新舊版 10 種操作情境逐字比對，除上述修正外畫面完全相同。
 
 ### v6.17.5（2026-11-24）
 - 修正離線功能：`sw.js` 預先快取清單仍指向已不存在的 `json/政府採購法.json`、`json/政府採購法施行細則.json`，導致 Service Worker 安裝失敗。改為實際使用的 `json/procurement_act.json`、`json/procurement_rules.json`。
