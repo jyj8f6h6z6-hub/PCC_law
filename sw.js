@@ -1,4 +1,4 @@
-const CACHE = 'pcc-e-law-v6.20-data20261124-152315';
+const CACHE = 'pcc-e-law-v6.20-data20261124-152900';
 // 預先快取清單必須和 app.js 實際 fetch 的檔名一致；
 // 清單中任何一個檔案 404，整個 Service Worker 就會安裝失敗，離線功能完全不會啟用。
 const CORE = [
