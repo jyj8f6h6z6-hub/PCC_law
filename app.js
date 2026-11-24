@@ -12,6 +12,18 @@ let LETTERS = [],
   REF_INDEX_READY = false;
 // 資料筆數：載入資料後由 fillStats() 計算，頁面上 data-stat 標記的數字會自動更新。
 const STATS = { laws: 0, letters: 0, cats: 0 };
+// 頁首顯示資料日期：法規以更新程式的執行日為準；函釋以收錄的最新發文日為準。
+function showDataDates(lawsFile) {
+  const el = $('#dataDate');
+  if (!el) return;
+  const lawDate = String(lawsFile?.generatedAt || '').slice(0, 10);
+  const letterDate = LETTERS.reduce((m, r) => (r.date > m ? r.date : m), '');
+  const parts = [];
+  if (lawDate) parts.push(`法規資料更新：${lawDate}`);
+  if (letterDate) parts.push(`函釋收錄至：${letterDate}`);
+  el.textContent = parts.join('　｜　');
+  el.hidden = !parts.length;
+}
 function fillStats() {
   STATS.laws = LAWS.length;
   STATS.letters = LETTERS.length;
@@ -40,6 +52,62 @@ const articleKey = no =>
 const displayArticleNo = s => String(s ?? '').replace(/^第(\d+)-(\d+)條$/, '第$1條之$2');
 // 內部識別值 → 畫面顯示：「5-1」→「第5條之1」、「58」→「第58條」。
 const articleLabel = key => displayArticleNo(`第${key}條`);
+
+// ── 法規識別與狀態 ───────────────────────────────────────
+// 同名法規可能有多筆（例如不同年度的同名規定），所以畫面上一律用工程會法規編號（id）識別。
+// lawMap（名稱 → 法規）只用於從函釋文字辨識法規名稱，同名時優先指向現行版本。
+const lawById = new Map();
+const lawKeyOf = l => l?.id || (String(l?.url || '').match(/[?&]id=(\w+)/) || [])[1] || l?.name || '';
+const lawByKey = k => lawById.get(k) || lawMap.get(k);
+const isAbolished = l => !!(l && (l.status || l.abolished));
+const abolishedText = l => `已${l.status || '廢止'}${l.abolished ? `（${l.abolished}）` : ''}`;
+const statusBadge = l =>
+  isAbolished(l) ? `<span class="badge-abolished" title="${esc(abolishedText(l))}">${esc(l.status || '廢止')}</span>` : '';
+const abolishedBanner = l =>
+  isAbolished(l)
+    ? `<div class="abolished-banner">⚠ 本法規${esc(abolishedText(l))}，內容僅供查考，現已不適用。</div>`
+    : '';
+// 「※本次發布之條文全部或部分尚未施行…」等工程會附註
+const noticeBanner = l => (l?.notice ? `<div class="notice-banner">ℹ ${esc(l.notice)}</div>` : '');
+const pendingBadge = l =>
+  /尚未施行|尚未實施/.test(l?.notice || '')
+    ? `<span class="badge-pending" title="${esc(l.notice)}">尚未施行</span>`
+    : '';
+function attachmentsHtml(l) {
+  const list = l?.attachments || [];
+  if (!list.length) return '';
+  const groups = new Map();
+  for (const a of list) (groups.get(a.kind) || groups.set(a.kind, []).get(a.kind)).push(a);
+  return `<div class="law-attachments">${[...groups]
+    .map(
+      ([kind, arr]) =>
+        `<div><b>${esc(kind || '附件')}：</b>${arr.map(a => `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name)}</a>`).join('、')}</div>`,
+    )
+    .join('')}</div>`;
+}
+// 逐條法規的條文（含章節標題）。idPrefix 用於定位命中條文。
+function articlesHtml(l, ts, idPrefix, cls) {
+  let chapter = '';
+  return l.articles
+    .map(a => {
+      let head = '';
+      if (a.chapter && a.chapter !== chapter) {
+        chapter = a.chapter;
+        head = `<h3 class="law-chapter">${esc(chapter)}</h3>`;
+      }
+      return `${head}<section class="${cls}" id="${idPrefix}${encodeURIComponent(a.no)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text, ts)}</div></section>`;
+    })
+    .join('');
+}
+function indexLaws() {
+  lawById.clear();
+  lawMap.clear();
+  for (const l of LAWS) {
+    lawById.set(lawKeyOf(l), l);
+    const cur = lawMap.get(l.name);
+    if (!cur || (isAbolished(cur) && !isAbolished(l))) lawMap.set(l.name, l);
+  }
+}
 const norm = s =>
   String(s || '')
     .toLowerCase()
@@ -319,7 +387,9 @@ function linkRefs(text, ts = []) {
     if (r.start < pos) continue;
     out += hi(text.slice(pos, r.start), ts);
     const label = text.slice(r.start, r.end);
-    out += `<button class="lawref" title="開啟 ${esc(r.law)} ${esc(articleLabel(r.a))}" data-law="${esc(r.law)}" data-a="${esc(r.a)}">${hi(label, ts)}</button>`;
+    const target = lawMap.get(r.law);
+    const gone = isAbolished(target);
+    out += `<button class="lawref${gone ? ' lawref-abolished' : ''}" title="開啟 ${esc(r.law)} ${esc(articleLabel(r.a))}${gone ? `（${esc(abolishedText(target))}）` : ''}" data-law="${esc(r.law)}" data-a="${esc(r.a)}">${hi(label, ts)}</button>`;
     pos = r.end;
   }
   return out + hi(text.slice(pos), ts);
@@ -410,7 +480,7 @@ function renderLetterLawChooser(r) {
   if (!groups.length) return '';
   return `<div class="letter-law-tools" data-letter-law-tools="${r.index}">
     <div class="letter-law-tools-title"><b>對照法規</b><span class="muted">勾選後顯示全文並定位本函釋提及條文（預設不顯示）</span></div>
-    <div class="letter-law-options">${groups.map((g, i) => `<label class="letter-law-option"><input type="checkbox" class="letter-law-check" data-letter-id="${r.index}" data-letter-law-index="${i}"><span>${esc(g.law)} <small>${g.articles.map(a => esc(articleLabel(a))).join('、')}</small></span></label>`).join('')}</div>
+    <div class="letter-law-options">${groups.map((g, i) => `<label class="letter-law-option"><input type="checkbox" class="letter-law-check" data-letter-id="${r.index}" data-letter-law-index="${i}"><span>${statusBadge(lawMap.get(g.law))}${esc(g.law)} <small>${g.articles.map(a => esc(articleLabel(a))).join('、')}</small></span></label>`).join('')}</div>
     <div class="letter-law-previews"></div>
   </div>`;
 }
@@ -431,9 +501,9 @@ function renderLetterLawPreview(r, lawName, articles, idx) {
     content = `<div class="preview-fulltext">${linkRefs(l.fullText || '（無全文內容）', [])}</div>`;
   }
   return `<section class="letter-law-preview-card" data-letter-law-preview="${idx}">
-    <div class="letter-law-preview-head"><div><h3>${esc(l.name)}</h3><div class="lawmeta">${esc(l.category || '')}</div></div><button type="button" class="letter-law-preview-close" data-letter-id="${r.index}" data-letter-law-index="${idx}" aria-label="關閉 ${esc(l.name)}">×</button></div>
+    <div class="letter-law-preview-head"><div><h3>${statusBadge(l)}${esc(l.name)}</h3><div class="lawmeta">${esc(l.category || '')}${isAbolished(l) ? `　｜　<span class="abolished-text">${esc(abolishedText(l))}</span>` : ''}</div></div><button type="button" class="letter-law-preview-close" data-letter-id="${r.index}" data-letter-law-index="${idx}" aria-label="關閉 ${esc(l.name)}">×</button></div>
     <div class="letter-law-preview-scroll">${content}</div>
-    <div class="letter-law-preview-footer"><a href="#" class="open-full-law" data-full-lawname="${esc(l.name)}" data-full-target="article" data-full-targetkey="${esc(articles[0] || '')}" data-full-search="">開啟完整法規頁面 ↗</a></div>
+    <div class="letter-law-preview-footer"><a href="#" class="open-full-law" data-full-lawname="${esc(lawKeyOf(l))}" data-full-target="article" data-full-targetkey="${esc(articles[0] || '')}" data-full-search="">開啟完整法規頁面 ↗</a></div>
   </section>`;
 }
 function refreshLetterLawPreviews(letterId) {
@@ -485,7 +555,10 @@ function snippet(text, ts, span = 72) {
 }
 function lawSearchHits(ts) {
   const hits = [];
-  for (const l of LAWS) {
+  const hide = $('#hideAbolished')?.checked;
+  // 現行法規排在前面，已廢止的排在後面
+  const laws = [...LAWS.filter(l => !isAbolished(l)), ...(hide ? [] : LAWS.filter(isAbolished))];
+  for (const l of laws) {
     if (l.articles.length) {
       for (const a of l.articles) {
         const hay = norm(a.text);
@@ -520,9 +593,9 @@ function runSearch() {
   const visibleHits = lh.slice(0, 200),
     lawGroups = [];
   for (const h of visibleHits) {
-    let g = lawGroups.find(x => x.name === h.law.name);
+    let g = lawGroups.find(x => x.law === h.law);
     if (!g) {
-      g = { name: h.law.name, hits: [] };
+      g = { law: h.law, name: h.law.name, hits: [] };
       lawGroups.push(g);
     }
     g.hits.push(h);
@@ -531,7 +604,7 @@ function runSearch() {
     lawGroups
       .map(
         g =>
-          `<section class="lawhit-law-group collapsed"><button type="button" class="lawhit-law-toggle" aria-expanded="false"><span><b>${esc(g.name)}</b><span class="lawhit-law-count">${g.hits.length} 個命中位置</span></span><span class="lawhit-law-toggle-label">▼ 展開</span></button><div class="lawhit-law-body" hidden>${g.hits.map(h => `<button class="lawhit lawhit-point" data-lawname="${esc(h.law.name)}" data-target="${h.target}" data-targetkey="${esc(h.targetKey)}" data-search="${esc($('#q').value)}"><b>${esc(displayArticleNo(h.no))}</b><span class="hit-snippet">${snippet(h.text, ts)}</span></button>`).join('')}</div></section>`,
+          `<section class="lawhit-law-group collapsed"><button type="button" class="lawhit-law-toggle" aria-expanded="false"><span>${statusBadge(g.law)}${pendingBadge(g.law)}<b>${esc(g.name)}</b><span class="lawhit-law-count">${g.hits.length} 個命中位置</span></span><span class="lawhit-law-toggle-label">▼ 展開</span></button><div class="lawhit-law-body" hidden>${g.hits.map(h => `<button class="lawhit lawhit-point" data-lawname="${esc(lawKeyOf(h.law))}" data-target="${h.target}" data-targetkey="${esc(h.targetKey)}" data-search="${esc($('#q').value)}"><b>${esc(displayArticleNo(h.no))}</b><span class="hit-snippet">${snippet(h.text, ts)}</span></button>`).join('')}</div></section>`,
       )
       .join('') + (lh.length > 200 ? `<div class="status">結果較多，目前顯示前200個命中位置。</div>` : '');
   $('#lawHits').innerHTML = lh.length
@@ -570,18 +643,13 @@ function closeSearchLawPreview() {
   p.hidden = true;
   p.innerHTML = '<div class="empty">點選主管法規的命中位置，即可在此預覽。</div>';
 }
-function openSearchLawPreview(name, target = '', targetKey = '', search = '') {
-  let l = lawMap.get(name);
+function openSearchLawPreview(key, target = '', targetKey = '', search = '') {
+  let l = lawByKey(key);
   if (!l) return;
   let ts = tokens(search),
     content = '';
   if (l.articles.length) {
-    content = l.articles
-      .map(
-        a =>
-          `<section class="preview-law-article" id="preview-lawtarget-${encodeURIComponent(a.no)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text, ts)}</div></section>`,
-      )
-      .join('');
+    content = articlesHtml(l, ts, 'preview-lawtarget-', 'preview-law-article');
   } else {
     let paras = String(l.fullText || '（無全文內容）')
       .split(/\n+/)
@@ -591,7 +659,7 @@ function openSearchLawPreview(name, target = '', targetKey = '', search = '') {
   }
   let p = $('#searchLawPreview');
   p.hidden = false;
-  p.innerHTML = `<div class="search-preview-head"><div><h2>${esc(l.name)}</h2><div class="lawmeta">${esc(l.category)}<br>公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}</div></div><button type="button" class="search-preview-close" aria-label="關閉預覽">×</button></div><div class="search-preview-content">${content}</div><div class="search-preview-footer"><a href="#" class="open-full-law" data-full-lawname="${esc(l.name)}" data-full-target="${target}" data-full-targetkey="${esc(targetKey)}" data-full-search="${esc(search)}">開啟完整法規頁面 ↗</a></div>`;
+  p.innerHTML = `<div class="search-preview-head"><div><h2>${statusBadge(l)}${esc(l.name)}</h2><div class="lawmeta">${esc(l.category)}<br>公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}</div></div><button type="button" class="search-preview-close" aria-label="關閉預覽">×</button></div><div class="search-preview-content">${abolishedBanner(l)}${noticeBanner(l)}${content}${attachmentsHtml(l)}</div><div class="search-preview-footer"><a href="#" class="open-full-law" data-full-lawname="${esc(lawKeyOf(l))}" data-full-target="${target}" data-full-targetkey="${esc(targetKey)}" data-full-search="${esc(search)}">開啟完整法規頁面 ↗</a></div>`;
   let id =
     target === 'article'
       ? 'preview-lawtarget-' + encodeURIComponent(targetKey)
@@ -610,32 +678,31 @@ function openSearchLawPreview(name, target = '', targetKey = '', search = '') {
 function renderLaws() {
   let q = norm($('#lawq').value),
     cat = $('#category').value,
-    arr = LAWS.filter(l => (!cat || l.category === cat) && (!q || norm(lawText(l)).includes(q)));
+    hide = $('#lawHideAbolished')?.checked,
+    arr = LAWS.filter(
+      l => (!cat || l.category === cat) && (!hide || !isAbolished(l)) && (!q || norm(lawText(l)).includes(q)),
+    );
+  const gone = arr.filter(isAbolished).length;
   $('#lawsCount').className = 'status';
-  $('#lawsCount').textContent = `共 ${arr.length} 筆`;
+  $('#lawsCount').textContent = `共 ${arr.length} 筆${gone ? `（其中已廢止或停止適用 ${gone} 筆）` : ''}`;
   let groups = {};
   arr.forEach(l => (groups[l.category] ??= []).push(l));
   $('#lawsList').innerHTML =
     Object.entries(groups)
       .map(
         ([c, ls]) =>
-          `<div class="catgroup"><h3>${esc(c)} <span class="muted">${ls.length}筆</span></h3>${ls.map(l => `<div class="lawrow"><div><div class="lawname" data-lawname="${esc(l.name)}">${esc(l.name)}</div><div class="lawmeta">公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}　｜　${l.articles.length ? `${l.articles.length}個條文` : '全文式資料'}</div></div><span class="pill">${esc(l.dataType || '法規')}</span></div>`).join('')}</div>`,
+          `<div class="catgroup"><h3>${esc(c)} <span class="muted">${ls.length}筆</span></h3>${ls.map(l => `<div class="lawrow${isAbolished(l) ? ' is-abolished' : ''}"><div><div class="lawname" data-lawname="${esc(lawKeyOf(l))}">${statusBadge(l)}${pendingBadge(l)}${esc(l.name)}</div><div class="lawmeta">${isAbolished(l) ? `<span class="abolished-text">${esc(abolishedText(l))}</span>　｜　` : ''}公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}　｜　${l.articles.length ? `${l.articles.length}個條文` : l.fullText ? '全文式資料' : '附件'}</div></div><span class="pill">${esc(l.dataType || '法規')}</span></div>`).join('')}</div>`,
       )
       .join('') || '<div class="empty">沒有符合條件的法規</div>';
 }
-function openLaw(name, target = '', targetKey = '', search = '') {
-  let l = lawMap.get(name);
+function openLaw(key, target = '', targetKey = '', search = '') {
+  let l = lawByKey(key);
   if (!l) return;
   showView('lawDetail');
   let ts = tokens(search);
   let content;
   if (l.articles.length) {
-    content = l.articles
-      .map(
-        a =>
-          `<section class="law-article" id="lawtarget-${encodeURIComponent(a.no)}"><h3>${esc(displayArticleNo(a.no))}</h3><div class="txt">${linkRefs(a.text, ts)}</div></section>`,
-      )
-      .join('');
+    content = articlesHtml(l, ts, 'lawtarget-', 'law-article');
   } else {
     let paras = String(l.fullText || '（無全文內容）')
       .split(/\n+/)
@@ -647,7 +714,7 @@ function openLaw(name, target = '', targetKey = '', search = '') {
       `</div>`;
   }
   $('#lawDetail').innerHTML =
-    `<div class="lawdetail-head"><h2>${esc(l.name)}</h2><div class="lawmeta">${esc(l.category)}<br>公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}　｜　資料型態：${esc(l.dataType || '—')}</div><a class="official" href="${esc(l.url)}" target="_blank" rel="noopener">工程會法規原始頁面 ↗</a></div>${content}`;
+    `<div class="lawdetail-head"><h2>${statusBadge(l)}${esc(l.name)}</h2><div class="lawmeta">${esc(l.category)}<br>公發布：${esc(l.published || '—')}　｜　最新異動：${esc(l.updated || '—')}　｜　資料型態：${esc(l.dataType || '—')}${l.docNo ? `　｜　發文字號：${esc(l.docNo)}` : ''}</div><a class="official" href="${esc(l.url)}" target="_blank" rel="noopener">工程會法規原始頁面 ↗</a>${abolishedBanner(l)}${noticeBanner(l)}${attachmentsHtml(l)}</div>${content}`;
   let id = '';
   if (target === 'article') id = 'lawtarget-' + encodeURIComponent(targetKey);
   else if (target === 'full') id = 'lawfull-' + targetKey;
@@ -715,7 +782,7 @@ function selectArticle(a) {
         .slice(0, 80)
         .map(
           l =>
-            `<a href="#" class="related-link openlaw" data-lawname="${esc(l.name)}"><b>${esc(l.name)}</b><small>${esc(l.category)}｜${esc(l.updated || '')}</small></a>`,
+            `<a href="#" class="related-link openlaw" data-lawname="${esc(lawKeyOf(l))}"><b>${statusBadge(l)}${esc(l.name)}</b><small>${esc(l.category)}｜${esc(l.updated || '')}</small></a>`,
         )
         .join('')}</div>`
     : '';
@@ -726,7 +793,7 @@ function openDrawer(law, a) {
   let ar = findArticle(law, a);
   $('#drawerTitle').textContent = `${law} ${articleLabel(a)}`;
   $('#drawerBody').innerHTML = ar
-    ? `<div class="article-text">${linkRefs(ar.text)}</div><p><a href="${esc(lawMap.get(law)?.url || '#')}" target="_blank">工程會法規原始頁面 ↗</a></p><div class="status">本站偵測相關函釋：${lettersFor(law, a).length}筆</div>`
+    ? `${abolishedBanner(lawMap.get(law))}${noticeBanner(lawMap.get(law))}<div class="article-text">${linkRefs(ar.text)}</div><p><a href="${esc(lawMap.get(law)?.url || '#')}" target="_blank">工程會法規原始頁面 ↗</a></p><div class="status">本站偵測相關函釋：${lettersFor(law, a).length}筆</div>`
     : `<div class="empty">${STATS.laws.toLocaleString()}筆主管法規資料中未找到此條文。</div>`;
   $('#drawer').hidden = false;
   document.body.classList.add('drawer-open');
@@ -776,12 +843,13 @@ Promise.all([
     LETTERS = d.records;
     ACT_RULES_MAP = m.map || {};
     normalizeLawDisplayData(LAWS);
-    LAWS.forEach(x => lawMap.set(x.name, x));
+    indexLaws();
     normalizeLawDisplayData([actLaw, ruleLaw]);
     lawMap.set('政府採購法', actLaw);
     lawMap.set('政府採購法施行細則', ruleLaw);
     buildLawAliasPattern();
     fillStats();
+    showDataDates(l);
     let cats = [...new Set(LAWS.map(x => x.category))];
     $('#category').innerHTML =
       `<option value="">全部${STATS.cats}類</option>` + cats.map(c => `<option>${esc(c)}</option>`).join('');
@@ -940,6 +1008,8 @@ $('#clear').onclick = () => {
 };
 $('#more').onclick = renderSearchMore;
 $('#lawq').oninput = renderLaws;
+$('#lawHideAbolished').onchange = renderLaws;
+$('#hideAbolished').onchange = runSearch;
 $('#category').onchange = renderLaws;
 $('#backLaws').onclick = () => showView('laws');
 $('#articleLaw').onchange = () => {

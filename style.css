@@ -839,3 +839,86 @@ footer {
     max-height: 60vh;
   }
 }
+
+/* ── v6.19 法規狀態、附件、章節、資料日期 ───────────────── */
+.badge-abolished {
+  display: inline-block;
+  background: #b42318;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 0 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+.abolished-banner {
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #912018;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-weight: 600;
+}
+.abolished-text {
+  color: #b42318;
+  font-weight: 600;
+}
+.lawrow.is-abolished .lawname {
+  color: #6b7c80;
+}
+.lawref.lawref-abolished {
+  background: #f2f4f5;
+  color: #6b7c80;
+  text-decoration: line-through;
+  text-decoration-color: #b42318;
+}
+.law-chapter {
+  margin: 22px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #d9e5e7;
+  color: #145f6b;
+  font-size: 17px;
+}
+.law-attachments {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.law-attachments a {
+  margin-right: 2px;
+}
+header p.data-date {
+  font-size: 13px;
+  opacity: 0.75;
+}
+.inline-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.notice-banner {
+  background: #fffaeb;
+  border: 1px solid #fedf89;
+  color: #93370d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.badge-pending {
+  display: inline-block;
+  background: #f79009;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 0 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: 2px;
+  white-space: nowrap;
+}

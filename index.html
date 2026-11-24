@@ -21,6 +21,7 @@
             >145</span
           >筆・工程會PRMS <span data-stat="letters">3,666</span>筆函釋
         </p>
+        <p class="data-date" id="dataDate" hidden></p>
       </div>
     </header>
     <nav class="tabs wrap">
@@ -47,6 +48,7 @@
                 <option value="letters">工程會函釋</option>
               </select></label
             ><label><input id="full" type="checkbox" checked /> 函釋顯示全文</label
+            ><label><input id="hideAbolished" type="checkbox" /> 隱藏已廢止法規</label
             ><button id="clear">清除</button>
           </div>
         </div>
@@ -102,6 +104,7 @@
             <input id="lawq" type="search" placeholder="搜尋法規名稱或全文" /><select id="category">
               <option value="">全部10類</option>
             </select>
+            <label class="inline-check"><input id="lawHideAbolished" type="checkbox" /> 隱藏已廢止法規</label>
           </div>
           <div id="lawsCount"></div>
           <div id="lawsList"></div>
