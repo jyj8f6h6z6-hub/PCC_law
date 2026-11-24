@@ -1,0 +1,7 @@
+# 備份壓縮檔不要上傳到 GitHub Pages（任何人都能下載）
+*.zip
+
+# 系統產生的檔案
+.DS_Store
+Thumbs.db
+desktop.ini

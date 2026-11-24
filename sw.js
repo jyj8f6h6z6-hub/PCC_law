@@ -1,7 +1,10 @@
-const CACHE = 'pcc-e-law-v6.17.4-20260923';
+const CACHE = 'pcc-e-law-v6.17.5-20261124';
+// 預先快取清單必須和 app.js 實際 fetch 的檔名一致；
+// 清單中任何一個檔案 404，整個 Service Worker 就會安裝失敗，離線功能完全不會啟用。
 const CORE = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './offline.html',
-  './data/laws.json', './data/letters.json', './data/act_rules_map.json', './json/政府採購法.json', './json/政府採購法施行細則.json'
+  './data/laws.json', './data/letters.json', './data/act_rules_map.json',
+  './json/procurement_act.json', './json/procurement_rules.json'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
